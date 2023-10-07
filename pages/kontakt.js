@@ -2,6 +2,7 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
+import profile from '../public/pictures/profile.jpg'
 
 const bild = () => {
     <image
@@ -29,7 +30,17 @@ export default function Home() {
         </h1>
 
         <div className={styles.grid}>
-            {bild}
+          <div className={styles.card}>
+            <Image src={profile} />
+            <h3>GolemT</h3>
+            <code className={styles.description}>Head Developer</code>         
+          </div>
+
+          <div className={styles.card}>
+            <Image src={profile} />
+            <h3>Platina</h3>
+            <code className={styles.description}>Head Designer</code>         
+          </div>
         </div>
       </main>
 
