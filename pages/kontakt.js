@@ -2,7 +2,8 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
-import profile from '../public/pictures/profile.jpg'
+import profile from '../public/pictures/profile.jpg';
+import ChatGPT from '../public/pictures/ChatGPT.png';
  
 export default function Home() {
   return (
@@ -31,6 +32,15 @@ export default function Home() {
             <Image src={profile} />
             <h3>Platina</h3>
             <code className={styles.description}>Head Designer</code>         
+          </div>
+
+          <div className={styles.card}>
+            <Image src={ChatGPT} 
+              height={400}
+              width={400}
+            />
+            <h3>ChatGPT</h3>
+            <code className={styles.description}>Code Improver</code>         
           </div>
         </div>
       </main>
