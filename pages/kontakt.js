@@ -3,15 +3,6 @@ import styles from '../styles/Home.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
 import profile from '../public/pictures/profile.jpg'
-
-const bild = () => {
-    <image
-        src="images/bild.png"
-        height={144}
-        width={144}
-        alt="bild"
-    />
-}
  
 export default function Home() {
   return (
