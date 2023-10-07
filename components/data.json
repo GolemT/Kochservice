@@ -1,5 +1,5 @@
 {
-    "01": {
+    "1": {
         "name": "Frittiertes Hühnchen mit Reis",
         "pic": "",
         "zutaten": "",
@@ -11,7 +11,7 @@
             "2": {}
         }	
     },
-    "02": {
+    "2": {
         "name": "Schnitzel mit gedünstetem Blumenkohl/Brokkoli und Kartoffelpüree",
         "pic": "../public/vercel.svg",
         "zutaten": "",
@@ -20,8 +20,23 @@
                 "nummer": 1,
                 "durchführung": "Kartoffeln schälen"
             },
-            "Schritt 2": {
+            "2": {
 
+            }
+        }
+    },
+    "3": {
+        "name": "",
+        "pic": "",
+        "zutaten": "",
+        "anleitung": {
+            "1": {
+                "nummer": 1,
+                "durchführung": ""
+            },
+            "2": {
+                "nummer": 2,
+                "durchführung": ""
             }
         }
     }

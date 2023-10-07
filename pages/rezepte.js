@@ -1,9 +1,11 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Link from 'next/link';
-import data from '../components/data';
+import getList from '../components/logic.js'
  
-export default function Home() {
+export default function Home(array) {
+  const recipeList = getList()
+
   return (
     <div className={styles.container}>
       <Head>
@@ -19,10 +21,8 @@ export default function Home() {
 
 
         <div className={styles.grid}>
-          <Link href="/rezepte" className={styles.card}>
-            <h3>Rezepte &rarr;</h3>
-            <p>Eine Übersicht aller Rezepte.</p>
-          </Link>
+        
+          {recipeList}
 
         </div>
       </main>

@@ -1,8 +1,12 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Link from 'next/link';
+import { getPageContent } from '../components/logic'
+import { useRouter} from 'next/router'
 
 export default function Gericht() {
+  const router = useRouter()
+  const { ID } = router.query
   return (
     <div className={styles.container}>
       <Head>
@@ -15,12 +19,8 @@ export default function Gericht() {
             Rezept
         </h1>
 
-        <p className={styles.description}>
-          
-        </p>
-
         <div className={styles.grid}>
-          Wow
+          {getPageContent(ID)}
         </div>
       </main>
 
