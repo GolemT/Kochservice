@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Link from 'next/link';
+import data from '../components/data';
  
 export default function Home() {
   return (
@@ -18,33 +19,11 @@ export default function Home() {
 
 
         <div className={styles.grid}>
-          <Link href="/rezepte.js" className={styles.card}>
+          <Link href="/rezepte" className={styles.card}>
             <h3>Rezepte &rarr;</h3>
             <p>Eine Übersicht aller Rezepte.</p>
           </Link>
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Random &rarr;</h3>
-            <p>Finde ein Rezept auf gut glück.</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h3>Vorschläge &rarr;</h3>
-            <p>Schlage neue Rezepte vor und erweitere unser Sortiment.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Kontakt &rarr;</h3>
-            <p>
-              Unser Impressum sowie alle beteiligten Personen.
-            </p>
-          </a>
         </div>
       </main>
 
