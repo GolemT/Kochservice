@@ -2,19 +2,20 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Link from 'next/link';
 import getList from '../components/logic.js'
+import Navbar from '../components/Navbar';
  
 export default function Home(array) {
   const recipeList = getList()
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container}>      
       <Head>
         <title>Kochservice</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-      <Link href="/">GolemT's Kochservice!</Link>
+        <Navbar />
         <h1 className={styles.title}>
           Rezepte!
         </h1>
