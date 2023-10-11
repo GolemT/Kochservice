@@ -3,6 +3,7 @@ import styles from '../styles/Home.module.css';
 import Link from 'next/link';
 import { getPageContent } from '../components/logic'
 import { useRouter} from 'next/router'
+import Navbar from '../components/navbar';
 
 export default function Gericht() {
   const router = useRouter()
@@ -15,6 +16,7 @@ export default function Gericht() {
       </Head>
 
       <main>
+        <Navbar />
         <h1 className={styles.title}>
             Rezept
         </h1>
