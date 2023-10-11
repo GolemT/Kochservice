@@ -27,6 +27,7 @@
     align-items: center; /* Center the content vertically */
     justify-content: center;
     width: 60%;
+    color: #0070f3;
   }
   
   .sitename {
@@ -64,8 +65,22 @@
     padding-top: 60px;
     transition: 0.5s;
   }  
+
+  .Link {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+  }
+
+  .Link:hover {
+    color: #f1f1f1;
+    cursor: pointer;
+  }
   
-  .sidenav a {
+  .a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 25px;
@@ -74,12 +89,12 @@
     transition: 0.3s;
   }
   
-  .sidenav a:hover {
+  .a:hover {
     color: #f1f1f1;
     cursor: pointer;
   }
   
-  .sidenav .closebtn {
+  .closebtn {
     position: absolute;
     top: 0;
     right: 25px;

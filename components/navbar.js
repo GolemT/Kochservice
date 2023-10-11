@@ -1,5 +1,5 @@
 import Link from "next/link";
-import randomID from "./logic";
+import { randomID, recipeIDs } from "./logic";
 import React, { useState } from 'react';
 import styles from '../styles/Navbar.module.css'; // Import the CSS module
 import Image from "next/image";
@@ -24,18 +24,18 @@ const Navbar = () => {
         <Image className={styles.menu} src={HamburgerMenu} alt="menu" width={50} height={50}/>
       </span>
       <span className={styles.header}>
-        <Link href="/">GolemT's Kochservice</Link>
+        <Link className={styles.header} href="/">GolemT's Kochservice</Link>
       </span>
       <span className={styles.sitename}>
         Searchbar
       </span>
       <div id="sidenav" className={`${isOpen ? styles.opensidenav : styles.sidenav}`}>
         <a onClick={closeNav} className={styles.closebtn}>&times;</a>
-        <Link href="/">Home</Link>
-        <Link href="/rezepte">Rezepte</Link>
-        <Link href={`/gericht?ID=${num}`}>Random</Link>
-        <Link href="/vorschlaege">Vorschläge</Link>
-        <Link href="/kontakt">Kontakt</Link>
+        <Link className={styles.Link} href="/">Home</Link>
+        <Link className={styles.Link} href="/rezepte">Rezepte</Link>
+        <Link className={styles.Link} key={recipeIDs} href={`/gericht?ID=${num}`} passHref>Random</Link>
+        <Link className={styles.Link} href="/vorschlaege">Vorschläge</Link>
+        <Link className={styles.Link} href="/kontakt">Kontakt</Link>
       </div>
     </div>
   );
