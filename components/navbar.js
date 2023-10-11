@@ -29,7 +29,7 @@ const Navbar = () => {
       <span className={styles.sitename}>
         Searchbar
       </span>
-      <div id="sidenav" className={`${styles.sidenav} ${isOpen ? styles.open : ''}`}>
+      <div id="sidenav" className={`${isOpen ? styles.opensidenav : styles.sidenav}`}>
         <a onClick={closeNav} className={styles.closebtn}>&times;</a>
         <Link href="/">Home</Link>
         <Link href="/rezepte">Rezepte</Link>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import profile from '../public/pictures/profile.jpg';
 import ChatGPT from '../public/pictures/ChatGPT.png';
+import Navbar from '../components/navbar';
  
 export default function Home() {
   return (
@@ -12,10 +13,9 @@ export default function Home() {
         <title>Kochservice</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <Link href="/">GolemT's Kochservice!</Link>
       
       <main>
+        <Navbar />
 
         <h1 className={styles.title}>
             Kontakt!

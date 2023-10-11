@@ -2,7 +2,7 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Link from 'next/link';
 import getList from '../components/logic.js'
-import Navbar from '../components/Navbar';
+import Navbar from '../components/navbar';
  
 export default function Home(array) {
   const recipeList = getList()
