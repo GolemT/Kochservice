@@ -7,7 +7,10 @@ const recipeArray = Object.values(recipes)
 
 export const recipeIDs = Object.keys(data).filter((key) => key !== "default")
 export function randomID(){
-    let randomIndex = Math.floor(Math.random() * ((recipeIDs.length) - 1) +1)
+    let randomIndex = Math.floor(Math.random() * ((recipeIDs.length)))
+    if (recipeIDs[randomIndex]=='default'){
+        return 1
+    }
     return recipeIDs[randomIndex]
 }
 
@@ -32,7 +35,7 @@ export function getPageContent(ID){
     }
     if(recipe){
         return (
-            <div classname={styles.name}>
+            <div className={styles.name}>
                 <h2>{recipe.name}</h2>
                 <img src={recipe.pic} alt="Bild"></img>
                 <h3>{recipe.zutaten}</h3>
@@ -47,7 +50,7 @@ export function getPageContent(ID){
         )
     }
     return (
-        <div classname={styles.name}>
+        <div className={styles.name}>
             <h2>Rezept nicht vorhanden</h2>
         </div>
     )
