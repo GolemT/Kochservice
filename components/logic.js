@@ -36,13 +36,13 @@ export function getPageContent(ID){
     if(recipe){
         return (
             <div className={styles.name}>
-                <h2>{recipe.name}</h2>
-                <img src={recipe.pic} alt="Bild"></img>
-                <h3>{recipe.zutaten}</h3>
+                <h2>{recipe.title}</h2>
+                <img src={`${recipe.pic}`} alt="Bild"></img>
+                <h3>{recipe.ingredients}</h3>
                 <div>
-                    {Object.values(recipe.anleitung).map((step, index) => (
+                    {Object.values(recipe.preparation).map((step, index) => (
                         <div key={index}>
-                            <p>{step.durchführung}</p>
+                            <p>{step}</p>
                         </div>
                     ))}
                 </div>
@@ -59,7 +59,7 @@ export function getPageContent(ID){
 export default function getList(){
     return recipeArray.map((recipe, key) => (
         <Link href={`/gericht?ID=${key+1}`} className={styles.card} key={key}>
-        <h3>{recipe.name} &rarr;</h3>
+        <h3>{recipe.title} &rarr;</h3>
         </Link>
     ));
 }

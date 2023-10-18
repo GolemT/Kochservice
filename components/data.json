@@ -1,19 +1,17 @@
 {
     "1": {
-        "name": "Frittiertes Hühnchen mit Reis",
+        "title": "Frittiertes Hühnchen mit Reis",
         "pic": "",
-        "ingredients": "",
+        "ingredients": "Hühnchenfilet, Mehl, Stärke, Soja sauce, Knoblauch, Salz, Pfeffer, Öl, Reis",
         "preparation": {
-            "1": {
-                "nummer": 1,
-                "durchführung": ""
-            },
-            "2": {}
+            "Schritt 1": "Hühnchenfilet in mundgerecht Stücke schneiden. 3 Knoblauch zehen in stücke schneiden. Nun die Hühnchenstücke und den Knoblauch in eine Schale geben. Soja sauce, Salz & Pfeffer dazugeben und mit der Hand durchmischen. Nun 20 min einziehen lassen.",
+            "Schritt 2": "In einer anderen Schale Stärke & Mehl in gleichen Mengen zusammen mischen. Die Hühnerstückchen nun in das Mehl-Stärke gemisch eingeben und bedecken. Eine Pfanne mit Öl erhitzen und die Stückchen fritieren.",
+            "Schritt 3": "Nach Wunsch kann man die frittierten Stückchen nochmal fritieren. Sie schmecken aber auch so gut :). Den Reis aufsetzten damit er rechtzeitig fertig wird. Eine Soße wird gemischt aus Essig, Ketchup, Honig & Soja Sauce. Abschmecken und bei Bedarf anpassen. Die Soße in einer Pfanne leicht erhitzen. Nun die frittierten Hühnchenstücke in die Soße geben sodass diese die Soße aufnehmen. Im Anschluss kann das Gericht serviert werden"
         }	
     },
     "2": {
         "title": "Schnitzel mit gedünstetem Blumenkohl/Brokkoli und Kartoffelpüree",
-        "pic": "../public/vercel.svg",
+        "pic": "../public/Menu_icon.png",
         "ingredients": "1 Blumenkohl/Brokkoli, 5 Kartoffeln, Filets (vom Huhn oder Schwein), 2 Eier, Paniermehl, Salz, Pfeffer, Paprikagewürz, Butter, Milch, Öl",
         "preparation": {
             "Schritt 1": "Kartoffeln schählen und klein schneiden. Anschließend in einen Topf kochenden Wasser geben zusammen mit einer guten Prise Salz. Das ganze 20 min köcheln lassen. Währenddessen den Stamm vom Blumenkohl/Brokkoli abschneiden und die einzelen Spitzen in einem Dünstaufsatz über einen Topf kochendes Wasser stellen.",
@@ -26,11 +24,11 @@
         "pic": "",
         "ingredients": "2 Eier, 250ml Milch, 160g Mehl, 1 Prise Zucker, 1 Prise Salz, 1 TL Butter",
         "preparation": {
-                "Schritt 1": "Mehl mit Zucker und Salz vermischen. Eier und Milch hinzufügen und mit einem Schneebesen oder dem Handrührgerät zu einem glatten Teig verrühren.",
-                "Schritt 2": "Eine Pfanne auf mittlere Stufe erhitzen. Butter in die Pfanne geben und flüssig werden lassen",
-                "Schritt 3": "Eine Kelle des Teigs in die Pfanne gießen und durch schwenken der Pfanne verteilen.",
-                "Schritt 4": "Nach ein paar Minuten den nun festeren Teig wenden. Die obere Seite sollte nun leicht braun angebacken sein. Wenn nicht braucht diese Seite noch ein paar Minuten",
-                "Schritt 5": "Wenn beide Seiten leicht braun angebacken sind den Crepe von der Pfanne nehmen. Nun mit aufstrich der Wahl bedecken. Empfehlungen sind: Zucker, Nutella, Marmelade, Erdnussbutter"
+            "Schritt 1": "Mehl mit Zucker und Salz vermischen. Eier und Milch hinzufügen und mit einem Schneebesen oder dem Handrührgerät zu einem glatten Teig verrühren.",
+            "Schritt 2": "Eine Pfanne auf mittlere Stufe erhitzen. Butter in die Pfanne geben und flüssig werden lassen",
+            "Schritt 3": "Eine Kelle des Teigs in die Pfanne gießen und durch schwenken der Pfanne verteilen.",
+            "Schritt 4": "Nach ein paar Minuten den nun festeren Teig wenden. Die obere Seite sollte nun leicht braun angebacken sein. Wenn nicht braucht diese Seite noch ein paar Minuten",
+            "Schritt 5": "Wenn beide Seiten leicht braun angebacken sind den Crepe von der Pfanne nehmen. Nun mit aufstrich der Wahl bedecken. Empfehlungen sind: Zucker, Nutella, Marmelade, Erdnussbutter"
         }
     }
 }
