@@ -102,5 +102,10 @@
     margin-left: 50px;
   }
 
-
-  
+.search {
+  font-size: 20px;
+  border: none;
+  border-radius: 15px;
+  width: 100%;
+  padding: 10px;
+}

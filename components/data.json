@@ -30,5 +30,15 @@
             "Schritt 4": "Nach ein paar Minuten den nun festeren Teig wenden. Die obere Seite sollte nun leicht braun angebacken sein. Wenn nicht braucht diese Seite noch ein paar Minuten",
             "Schritt 5": "Wenn beide Seiten leicht braun angebacken sind den Crepe von der Pfanne nehmen. Nun mit aufstrich der Wahl bedecken. Empfehlungen sind: Zucker, Nutella, Marmelade, Erdnussbutter"
         }
+    },
+    "4": {
+        "title": "Omlette",
+        "pic": "",
+        "ingredients": "4 Eier, Milch, Salz, Pfeffer, Öl, (Optional: Käse, Schinken, Paprika)",
+        "preparation": {
+            "Schritt 1": "Eier aufbrechen und in einer Schale zusammen verühren. Dazu einen Schuss Milch geben. Mit Salz und Pfeffer würzen",
+            "Schritt 2": "Eine Pfanne mit ein bisschen Öl auf mittlere Temperatur bringen. Eier hineingeben. Fallsman Käse oder ähnliches im Omlett haben möchte nun dazugeben.",
+            "Schritt 3": "Das ganze für ca. 5 Minuten kochen. Danach umdrehen und nochmal von der anderen Seite kochen. ODER: Kochen mit Deckel auf der Pfanne. So wird die Überseite etwas fester. Nach 10 min das Omlette in der Hälfte einklappen"
+        }
     }
 }
