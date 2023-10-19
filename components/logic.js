@@ -1,6 +1,7 @@
 import * as data from '../components/data.json';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css'
+import Image from 'next/image';
 
 const recipes = require('./data.json')
 const recipeArray = Object.values(recipes)
@@ -37,7 +38,7 @@ export function getPageContent(ID){
         return (
             <div className={styles.name}>
                 <h2>{recipe.title}</h2>
-                <img src={`${recipe.pic}`} alt="Bild"></img>
+                <img src={recipe.pic} alt="Bild"/>
                 <h3>{recipe.ingredients}</h3>
                 <div>
                     {Object.values(recipe.preparation).map((step, index) => (
@@ -58,7 +59,8 @@ export function getPageContent(ID){
 
 export default function getList(){
     return recipeArray.map((recipe, key) => (
-        <Link href={`/gericht?ID=${key+1}`} className={styles.card} key={key}>
+        <Link href={`/gericht?ID=${key+1}`} className={styles.recipecard} key={key}>
+        <img src={recipe.pic} alt="Bild"></img>
         <h3>{recipe.title} &rarr;</h3>
         </Link>
     ));
