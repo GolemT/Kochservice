@@ -27,7 +27,7 @@ const Navbar = () => {
         <Link className={styles.header} href="/">GolemT's Kochservice</Link>
       </span>
       <span className={styles.sitename}>
-        Searchbar
+        <input className={styles.search} placeholder="Search..."></input>
       </span>
       <div id="sidenav" className={`${isOpen ? styles.opensidenav : styles.sidenav}`}>
         <a onClick={closeNav} className={styles.closebtn}>&times;</a>
