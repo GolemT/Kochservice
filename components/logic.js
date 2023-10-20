@@ -1,12 +1,13 @@
-import * as data from '../components/data.json';
+import * as banana from '../components/data.json';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css'
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 const recipes = require('./data.json')
 const recipeArray = Object.values(recipes)
 
-export const recipeIDs = Object.keys(data).filter((key) => key !== "default")
+export const recipeIDs = Object.keys(banana).filter((key) => key !== "default")
 export function randomID(){
     let randomIndex = Math.floor(Math.random() * ((recipeIDs.length)))
     if (recipeIDs[randomIndex]=='default'){
@@ -26,22 +27,23 @@ function getKey(name) {
 }
 
 export function getPageContent(ID){
-    let recipe = null
+    const [objectData, setObjectData] = useState(null);
 
-    for (let key in data){
-        if(key==ID){
-            recipe = data[key]
-            break
-        }
-    }
-    if(recipe){
+    useEffect(() => {
+        fetch(`/app/api/getObject?objectId=${ID}`)
+        .then((response) => response.json())
+        .then((data) => setObjectData(data))
+        .catch((error) => console.error(error));
+    }, [])
+    
+    if(objectData){
         return (
             <div className={styles.name}>
-                <h2>{recipe.title}</h2>
-                <img src={recipe.pic} alt="Bild"/>
-                <h3>{recipe.ingredients}</h3>
+                <h2>{objectData.title}</h2>
+                <img src={objectData.pic} alt="Bild"/>
+                <h3>{objectData.ingredients}</h3>
                 <div>
-                    {Object.values(recipe.preparation).map((step, index) => (
+                    {Object.values(objectData.preparation).map((step, index) => (
                         <div key={index}>
                             <p>{step}</p>
                         </div>
