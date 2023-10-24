@@ -1,8 +1,7 @@
 import * as banana from '../components/data.json';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css'
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const recipes = require('./data.json')
 const recipeArray = Object.values(recipes)
@@ -27,14 +26,28 @@ function getKey(name) {
 }
 
 export function getPageContent(ID){
+
     const [objectData, setObjectData] = useState(null);
 
     useEffect(() => {
-        fetch(`/app/api/getObject?objectId=${ID}`)
-        .then((response) => response.json())
-        .then((data) => setObjectData(data))
-        .catch((error) => console.error(error));
-    }, [])
+    // Make the API request when the component mounts
+        fetch(`http://localhost:3001/api/getObject?objectId=${ID}`)
+        .then((response) => {
+            if (response.ok) {
+                console.log("okay")
+                return response.json();
+            } else {
+            throw new Error('Network response was not ok');
+            }
+        })
+        .then((data) => {
+            console.log(data)
+            setObjectData(data); // Update objectData with fetched data
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }, [ID]); // Use ID as a dependency to fetch data when it changes
     
     if(objectData){
         return (
