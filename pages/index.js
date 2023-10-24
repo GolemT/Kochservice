@@ -1,21 +1,10 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Link from 'next/link';
-import { randomID, recipeIDs } from '../components/logic' 
+import { randomID } from '../components/logic' 
  
 export default function Home() {
   const num = randomID()
-
-  fetch('http://localhost:3001/')
-    .then((response) => {
-      if(!response.ok){
-        throw new Error('Backend not responding')
-      }
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-    
   return (
     <div className={styles.container}>
       <Head>
@@ -38,9 +27,9 @@ export default function Home() {
             <p>Eine Übersicht aller Rezepte.</p>
           </Link>
 
-          <Link key={recipeIDs} href={`/gericht?ID=${num}`} passHref className={styles.card}>
-            <h3>Random &rarr;</h3>
-            <p>Finde ein Rezept auf gut glück.</p>
+          <Link href={`/gericht?ID=${num}`} passHref className={styles.card}>
+              <h3>Random &rarr;</h3>
+              <p>Finde ein Rezept auf gut Glück.</p>
           </Link>
 
           <Link

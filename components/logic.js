@@ -1,33 +1,49 @@
-import * as banana from '../components/data.json';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css'
 import React, { useState, useEffect } from 'react';
 
-const recipes = (
-    fetch('http://localhost:3001/api/getRecipes')
-    .then((response) => {
-        if (response.ok) {
-            return response.json();
-        } else {
-        throw new Error('Network response was not ok');
-        }
-    })
-    .then((data) => {
-        return(data);
-    })
-    .catch((error) => {
-        console.error(error);
-    })
-)
-const recipeArray = Object.values(recipes)
+export default function RecipeList() {
+    const [recipes, setRecipes] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-export const recipeIDs = Object.keys(recipes).filter((key) => key !== "default")
-export function randomID(){
-    let randomIndex = Math.floor(Math.random() * ((recipeIDs.length)))
-    if (recipeIDs[randomIndex]=='default'){
-        return 1
+    useEffect(() => {
+        // Fetch the data from your API
+        fetch('/api/getRecipeNames')
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok');
+            })
+            .then((data) => {
+                setRecipes(data); // Update the state with fetched data
+                setLoading(false);
+            })
+            .catch((err) => {
+                setError(err);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
     }
-    return recipeIDs[randomIndex]
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+
+    return (
+        <div>
+            {recipes.map((obj) => (
+                <Link key={obj.ID} href={`/gericht?ID=${obj.ID}`} className={styles.recipecard}>
+                    <img src={obj.pic} alt="Bild" />
+                    <h3>{obj.title} &rarr;</h3>
+                </Link>
+            ))}
+        </div>
+    );
 }
 
 export function getPageContent(ID){
@@ -74,11 +90,42 @@ export function getPageContent(ID){
     )
 }
 
-export default function getList(){
-    return recipeArray.map((recipe, key) => (
-        <Link href={`/gericht?ID=${key+1}`} className={styles.recipecard} key={key}>
-        <img src={recipe.pic} alt="Bild"></img>
-        <h3>{recipe.title} &rarr;</h3>
-        </Link>
-    ));
+export function randomID() {
+    return  (Math.floor(Math.random()* count +1))
 }
+ 
+
+// Defines how many recipes are available in the database
+// Should be automatically updated
+let count = 4
+
+// function to automatically update the variable "count"
+async function getCount() {
+    const [data, setData] = useState(null);
+  
+        const response = await fetch('http://localhost:3001/api/getAmount')
+    
+        if (!response.ok) {
+            throw new Error('Network response was not okay')
+        }
+
+        const answer = await response.json()
+        count = data.count
+
+        if (isNaN(count)) {
+            throw new Error('Invalid count value: ' + count)
+        }
+  
+    useEffect(() => {
+      fetchData();
+  
+      // Schedule API call every hour
+      const interval = setInterval(() => {
+        fetchData();
+      }, 3600000); // 3600000 milliseconds = 1 hour
+  
+      // Clear the interval when the component unmounts
+      return () => clearInterval(interval);
+    }, []);
+  
+  }

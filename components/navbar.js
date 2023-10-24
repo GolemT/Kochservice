@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { randomID, recipeIDs } from "./logic";
+import { randomID } from "./logic";
 import React, { useState } from 'react';
 import styles from '../styles/Navbar.module.css'; // Import the CSS module
 import Image from "next/image";
@@ -33,7 +33,7 @@ const Navbar = () => {
         <a onClick={closeNav} className={styles.closebtn}>&times;</a>
         <Link className={styles.Link} href="/">Home</Link>
         <Link className={styles.Link} href="/rezepte">Rezepte</Link>
-        <Link className={styles.Link} key={recipeIDs} href={`/gericht?ID=${num}`} passHref>Random</Link>
+        <Link className={styles.Link} href={`/gericht?ID=${num}`} passHref>Random</Link>
         <Link className={styles.Link} href="/vorschlaege">Vorschläge</Link>
         <Link className={styles.Link} href="/kontakt">Kontakt</Link>
       </div>

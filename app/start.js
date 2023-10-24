@@ -46,23 +46,42 @@ app.get('/api/getObject', async (req, res) => {
   }
 });
 
-app.get('/api/getRecipes', async (req, res) => {
+app.get('/api/getRecipeNames', async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig);
 
-        const data = await connection.execute('SELECT * FROM recipe');
+        const [rows] = await connection.execute('SELECT ID, title, pic FROM recipe');
 
         await connection.end();
 
-        if(!data){
-            return res.status(404).json({ error: 'An error occured while fetchin the entry.'});
+        if(rows.length === 0){
+            return res.status(404).json({ error: 'No recipes found.'});
         }
 
-        res.status(200).json(data);
+        res.status(200).json(rows);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error ocurred while fetching the entry.' })
     }
+})
+
+app.get('/api/getAmount', async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+
+        const [rows] = await connection.execute('SELECT COUNT(ID) AS count FROM recipe');
+
+        await connection.end();
+
+        if(!rows.length === 1){
+            return res.status(404).json({ error: 'Error counting IDs. Multiple Results.'});
+        }
+        console.log(rows[0])
+        res.status(200).json(rows[0]);
+  } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error ocurred while fetching the entry.' })
+  }  
 })
 
 app.listen(port, () => {
