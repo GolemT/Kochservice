@@ -6,8 +6,6 @@ const app = express();
 const port = 3001; // You can use any port you prefer
 
 app.use(express.json());
-
-
 app.use(cors());
 
 // Database connection configuration
@@ -17,6 +15,10 @@ const dbConfig = {
   password: 'user',
   database: 'kochservice', // database name
 };
+
+app.get('/', async (req, res) =>{
+    res.status(200).json({ success: 'Backend online'})
+})
 
 app.get('/api/getObject', async (req, res) => {
   try {
@@ -43,6 +45,25 @@ app.get('/api/getObject', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the entry.' });
   }
 });
+
+app.get('/api/getRecipes', async (req, res) => {
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+
+        const data = await connection.execute('SELECT * FROM recipe');
+
+        await connection.end();
+
+        if(!data){
+            return res.status(404).json({ error: 'An error occured while fetchin the entry.'});
+        }
+
+        res.status(200).json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error ocurred while fetching the entry.' })
+    }
+})
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

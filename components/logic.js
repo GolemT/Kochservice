@@ -3,10 +3,25 @@ import Link from 'next/link';
 import styles from '../styles/Home.module.css'
 import React, { useState, useEffect } from 'react';
 
-const recipes = require('./data.json')
+const recipes = (
+    fetch('http://localhost:3001/api/getRecipes')
+    .then((response) => {
+        if (response.ok) {
+            return response.json();
+        } else {
+        throw new Error('Network response was not ok');
+        }
+    })
+    .then((data) => {
+        return(data);
+    })
+    .catch((error) => {
+        console.error(error);
+    })
+)
 const recipeArray = Object.values(recipes)
 
-export const recipeIDs = Object.keys(banana).filter((key) => key !== "default")
+export const recipeIDs = Object.keys(recipes).filter((key) => key !== "default")
 export function randomID(){
     let randomIndex = Math.floor(Math.random() * ((recipeIDs.length)))
     if (recipeIDs[randomIndex]=='default'){
@@ -15,18 +30,7 @@ export function randomID(){
     return recipeIDs[randomIndex]
 }
 
-function getKey(name) {
-    let key = null
-    for(let i=0; i<recipes.length; i++) {
-        if(recipes[i].name == name){
-            key = i
-        }
-    }
-    return recipeIDs[key]
-}
-
 export function getPageContent(ID){
-
     const [objectData, setObjectData] = useState(null);
 
     useEffect(() => {
@@ -34,14 +38,12 @@ export function getPageContent(ID){
         fetch(`http://localhost:3001/api/getObject?objectId=${ID}`)
         .then((response) => {
             if (response.ok) {
-                console.log("okay")
                 return response.json();
             } else {
             throw new Error('Network response was not ok');
             }
         })
         .then((data) => {
-            console.log(data)
             setObjectData(data); // Update objectData with fetched data
         })
         .catch((error) => {

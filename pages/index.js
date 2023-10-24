@@ -5,6 +5,17 @@ import { randomID, recipeIDs } from '../components/logic'
  
 export default function Home() {
   const num = randomID()
+
+  fetch('http://localhost:3001/')
+    .then((response) => {
+      if(!response.ok){
+        throw new Error('Backend not responding')
+      }
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+    
   return (
     <div className={styles.container}>
       <Head>
