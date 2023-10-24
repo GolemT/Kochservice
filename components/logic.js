@@ -46,6 +46,7 @@ export default function RecipeList() {
     );
 }
 
+// function for /gericht, gets the corresponding recipe frome the database based on the ID given
 export function getPageContent(ID){
     const [objectData, setObjectData] = useState(null);
 
@@ -90,6 +91,8 @@ export function getPageContent(ID){
     )
 }
 
+// picks a random number from 1 to var count
+// used by the random function
 export function randomID() {
     return  (Math.floor(Math.random()* count +1))
 }
