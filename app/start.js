@@ -76,7 +76,6 @@ app.get('/api/getAmount', async (req, res) => {
         if(!rows.length === 1){
             return res.status(404).json({ error: 'Error counting IDs. Multiple Results.'});
         }
-        console.log(rows[0])
         res.status(200).json(rows[0]);
   } catch (error) {
         console.error(error);
