@@ -40,17 +40,25 @@ Um die benötigten Dependencies zu installieren zuerst:
 
 ### Run
 
+Damit abfragen geschehen können muss die Datenbank laufen. Solange diese nicht gehostet
+ist wird sie hier über XAMPP gestartet. In XAMPP startet man die db indem man die Module
+ Apache und MySQL startet.
+
 Das Frontend kann durch:
 
-    npm run dev
+    npm run app
 
 gestartet werden. Nun ist die Website aufrufbar über https://localhost:3000
 
 Damit das Backend funktioniert muss dieses noch gestartet werden. 
-Angefangen mit der MariaDB welche über XAMPP gestartet werden kann
-indem man die Module Apache und MySQL startet. Im Anschluss muss in 
-einer weiteren Konsole:
+In einer weiteren Konsole eingeben:
 
-    node app/start.js
+    npm run backend
 
-gestartet werden. Das Backend ist nun auf https://localhost:3001 aktiv.
+Das Backend ist nun auf https://localhost:3001 aktiv.
+
+
+Für einfache Entwicklung können sowohl Frontend als auch Backend zusammen im
+selben Terminal gestartet werden. Dies funktioniert über:
+
+    npm run dev
