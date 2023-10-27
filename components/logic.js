@@ -9,7 +9,7 @@ export default function RecipeList() {
 
     useEffect(() => {
         // Fetch the data from your API
-        fetch('/api/getRecipeNames')
+        fetch('http://localhost:3001/api/getRecipeNames')
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -38,8 +38,8 @@ export default function RecipeList() {
         <div>
             {recipes.map((obj) => (
                 <Link key={obj.ID} href={`/gericht?ID=${obj.ID}`} className={styles.recipecard}>
-                    <img src={obj.pic} alt="Bild" />
-                    <h3>{obj.title} &rarr;</h3>
+                <img src={obj.pic} alt="Bild" />
+                <h3>{obj.title} &rarr;</h3>
                 </Link>
             ))}
         </div>

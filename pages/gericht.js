@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import Link from 'next/link';
 import { getPageContent } from '../components/logic'
 import { useRouter} from 'next/router'
 import Navbar from '../components/navbar';
