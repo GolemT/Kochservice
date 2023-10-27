@@ -61,6 +61,7 @@ export function getPageContent(ID){
             }
         })
         .then((data) => {
+            data.preparation = JSON.parse(data.preparation)
             setObjectData(data); // Update objectData with fetched data
         })
         .catch((error) => {
@@ -68,27 +69,29 @@ export function getPageContent(ID){
         });
     }, [ID]); // Use ID as a dependency to fetch data when it changes
     
-    if(objectData){
+    if (objectData) {
         return (
             <div className={styles.name}>
                 <h2>{objectData.title}</h2>
-                <img src={objectData.pic} alt="Bild"/>
+                <img src={objectData.pic} alt="Bild" />
                 <h3>{objectData.ingredients}</h3>
                 <div>
-                    {Object.values(objectData.preparation).map((step, index) => (
-                        <div key={index}>
-                            <p>{step}</p>
+                    {/* Map through the preparation steps and display each one in a separate block */}
+                    {Object.entries(objectData.preparation).map(([step, description]) => (
+                        <div key={step}>
+                            <h4>{step}</h4>
+                            <p>{description}</p>
                         </div>
                     ))}
                 </div>
             </div>
-        )
+        );
     }
     return (
         <div className={styles.name}>
             <h2>Rezept nicht vorhanden</h2>
         </div>
-    )
+    );
 }
 
 // picks a random number from 1 to var count
