@@ -2,7 +2,7 @@ import Link from 'next/link';
 import styles from '../styles/Home.module.css'
 import React, { useState, useEffect } from 'react';
 
-export default function RecipeList() {
+export function RecipeList() {
     const [recipes, setRecipes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -99,7 +99,53 @@ export function getPageContent(ID){
 export function randomID() {
     return  (Math.floor(Math.random()* count +1))
 }
- 
+
+export function getSearch(input) {
+    const [content, setContent] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+  
+    useEffect(() => {
+      if (input) {
+        // Make the API request when the component mounts
+        fetch(`http://localhost:3001/api/getSearch?input=${input}`)
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Network response was not ok');
+            }
+          })
+          .then((data) => {
+            setContent(data);
+            setLoading(false);
+          })
+          .catch((error) => {
+            setError(error);
+            setLoading(false);
+          });
+      }
+    }, [input]);
+  
+    if (loading) {
+      return <div>Loading...</div>;
+    }
+  
+    if (error) {
+      return <div>Keine Rezepte gefunden :(</div>;
+    }
+  
+    return (
+      <div>
+        {content.map((obj) => (
+          <Link key={obj.ID} href={`/gericht?ID=${obj.ID}`} className={styles.recipecard}>
+            <img src={obj.pic} alt="Bild" />
+            <h3>{obj.title} &rarr;</h3>
+          </Link>
+        ))}
+      </div>
+    );
+  }
 
 // Defines how many recipes are available in the database
 // Should be automatically updated

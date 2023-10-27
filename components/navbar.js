@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styles from '../styles/Navbar.module.css'; // Import the CSS module
 import Image from "next/image";
 import HamburgerMenu from '../public/Menu_icon.png';
+import Searchbar from './searchbar'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +28,7 @@ const Navbar = () => {
         <Link className={styles.header} href="/">GolemT's Kochservice</Link>
       </span>
       <span className={styles.sitename}>
-        <input className={styles.search} placeholder="Search..."></input>
+        <Searchbar />
       </span>
       <div id="sidenav" className={`${isOpen ? styles.opensidenav : styles.sidenav}`}>
         <a onClick={closeNav} className={styles.closebtn}>&times;</a>

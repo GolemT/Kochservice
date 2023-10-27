@@ -55,7 +55,7 @@ app.get('/api/getRecipeNames', async (req, res) => {
         await connection.end();
 
         if(rows.length === 0){
-            return res.status(404).json({ error: 'No recipes found.'});
+            return res.status(204).json({ error: 'No recipes found.'});
         }
 
         res.status(200).json(rows);
@@ -74,13 +74,35 @@ app.get('/api/getAmount', async (req, res) => {
         await connection.end();
 
         if(!rows.length === 1){
-            return res.status(404).json({ error: 'Error counting IDs. Multiple Results.'});
+            return res.status(204).json({ error: 'Error counting IDs. Multiple Results.'});
         }
         res.status(200).json(rows[0]);
   } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error ocurred while fetching the entry.' })
   }  
+})
+
+app.get('/api/getSearch', async (req, res) => {
+  try {
+    const { input } = req.query
+    const searchValue = `%${input}%`
+
+    const connection = await mysql.createConnection(dbConfig);
+
+    const [rows] = await connection.execute(`SELECT ID, title, pic FROM recipe WHERE title LIKE ? OR ingredients LIKE ? OR preparation LIKE ?`, [searchValue, searchValue, searchValue]);
+    
+    await connection.end();
+    
+    if(rows.length===0){
+      return res.status(204).json({ error: 'No entries found.'})
+    }
+    
+    res.status(200).json(rows)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'An error ocurred while fetching the entrys.'})
+  }
 })
 
 app.listen(port, () => {
