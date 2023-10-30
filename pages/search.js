@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.css';
 import { getSearch }  from '../components/logic.js'
 import Navbar from '../components/navbar';
 import { useRouter } from 'next/router';
-import Searchbar from '../components/searchbar';
+
 
 export default function search(){
     const router = useRouter();
@@ -21,7 +21,7 @@ export default function search(){
           <main>
             <Navbar />
             <h1 className={styles.title}>
-              <Searchbar />
+              Rezepte mit '{input}'
             </h1>
     
     
