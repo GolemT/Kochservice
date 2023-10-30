@@ -100,7 +100,7 @@ app.get('/api/getSearch', async (req, res) => {
     
     res.status(200).json(rows)
   } catch (error) {
-    console.log(error)
+    console.error(error)
     res.status(500).json({ error: 'An error ocurred while fetching the entrys.'})
   }
 })

@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import Link from 'next/link';
 import Image from 'next/image';
 import profile from '../public/pictures/profile.jpg';
 import ChatGPT from '../public/pictures/ChatGPT.png';
