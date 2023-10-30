@@ -90,7 +90,7 @@ app.get('/api/getSearch', async (req, res) => {
 
     const connection = await mysql.createConnection(dbConfig);
 
-    const [rows] = await connection.execute(`SELECT ID, title, pic FROM recipe WHERE title LIKE ? OR ingredients LIKE ? OR preparation LIKE ?`, [searchValue, searchValue, searchValue]);
+    const [rows] = await connection.execute(`SELECT ID, title, pic FROM recipe WHERE title LIKE ? OR ingredients LIKE ?`, [searchValue, searchValue]);
     
     await connection.end();
     
