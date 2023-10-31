@@ -49,6 +49,7 @@
 }
 
 .recipecard {
+  display: flex;
   margin: 1rem;
   flex-basis: 100%;
   padding: 1.5rem;

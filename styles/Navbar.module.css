@@ -27,7 +27,7 @@
     align-items: center; /* Center the content vertically */
     justify-content: center;
     width: 60%;
-    color: #0070f3;
+    color: #c7c7c7;
   }
   
   .sitename {
@@ -104,8 +104,8 @@
 
 .search {
   font-size: 20px;
-  border: none;
-  border-radius: 15px;
+  border: black solid;
+  border-radius: 30px;
   width: 100%;
   padding: 10px;
 }

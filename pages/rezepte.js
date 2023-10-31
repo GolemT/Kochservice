@@ -1,11 +1,10 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import Link from 'next/link';
-import getList from '../components/logic.js'
+import { RecipeList } from '../components/logic.js'
 import Navbar from '../components/navbar';
  
-export default function Home(array) {
-  const recipeList = getList()
+export default function Home() {
+  const recipeList = RecipeList()
 
   return (
     <div className={styles.container}>      

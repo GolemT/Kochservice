@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { randomID, recipeIDs } from "./logic";
+import { randomID } from "./logic";
 import React, { useState } from 'react';
 import styles from '../styles/Navbar.module.css'; // Import the CSS module
 import Image from "next/image";
 import HamburgerMenu from '../public/Menu_icon.png';
+import Searchbar from './searchbar'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,13 +28,13 @@ const Navbar = () => {
         <Link className={styles.header} href="/">GolemT's Kochservice</Link>
       </span>
       <span className={styles.sitename}>
-        <input className={styles.search} placeholder="Search..."></input>
+        <Searchbar />
       </span>
       <div id="sidenav" className={`${isOpen ? styles.opensidenav : styles.sidenav}`}>
         <a onClick={closeNav} className={styles.closebtn}>&times;</a>
         <Link className={styles.Link} href="/">Home</Link>
         <Link className={styles.Link} href="/rezepte">Rezepte</Link>
-        <Link className={styles.Link} key={recipeIDs} href={`/gericht?ID=${num}`} passHref>Random</Link>
+        <Link className={styles.Link} href={`/gericht?ID=${num}`} passHref>Random</Link>
         <Link className={styles.Link} href="/vorschlaege">Vorschläge</Link>
         <Link className={styles.Link} href="/kontakt">Kontakt</Link>
       </div>
