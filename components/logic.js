@@ -38,7 +38,7 @@ export function RecipeList() {
         <div>
             {recipes.map((obj) => (
                 <Link key={obj.ID} href={`/gericht?ID=${obj.ID}`} className={styles.recipecard}>
-                <img src={obj.pic} alt="Bild" />
+                <img src={obj.pic} alt="Bild" className={styles.listpic}/>
                 <h3>{obj.title} &rarr;</h3>
                 </Link>
             ))}
@@ -71,20 +71,22 @@ export function getPageContent(ID){
     
     if (objectData) {
         return (
+          <document>
             <div className={styles.name}>
-                <h2>{objectData.title}</h2>
-                <img src={objectData.pic} alt="Bild" />
-                <h3>{objectData.ingredients}</h3>
-                <div>
-                    {/* Map through the preparation steps and display each one in a separate block */}
-                    {Object.entries(objectData.preparation).map(([step, description]) => (
-                        <div key={step}>
-                            <h4>{step}</h4>
-                            <p>{description}</p>
-                        </div>
-                    ))}
+              <h2>{objectData.title}</h2>
+              <img src={objectData.pic} alt="Bild" className={styles.pic}/>
+            </div>    
+            <div>
+              <h3>{objectData.ingredients}</h3>
+              {/* Map through the preparation steps and display each one in a separate block */}
+              {Object.entries(objectData.preparation).map(([step, description]) => (
+                <div key={step}>
+                  <h4>{step}</h4>
+                  <p>{description}</p>
                 </div>
+              ))}
             </div>
+          </document>
         );
     }
     return (
@@ -149,7 +151,7 @@ export function getSearch(input) {
 
 // Defines how many recipes are available in the database
 // Should be automatically updated
-let count = 4
+let count = 5
 
 // function to automatically update the variable "count"
 async function getCount() {
