@@ -141,7 +141,7 @@ export function getSearch(input) {
       <div>
         {content.map((obj) => (
           <Link key={obj.ID} href={`/gericht?ID=${obj.ID}`} className={styles.recipecard}>
-            <img src={obj.pic} alt="Bild" />
+            <img src={obj.pic} className={styles.listpic} alt="Bild" />
             <h3>{obj.title} &rarr;</h3>
           </Link>
         ))}
