@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
 const { connect } = require('http2');
+require('dotenv').config();
 
 const app = express();
 const port = 3001;
@@ -11,10 +12,11 @@ app.use(cors());
 
 // Database connection configuration
 const dbConfig = {
-  host: '127.0.0.1',
-  user: 'user',
-  password: 'user',
-  database: 'kochservice', // database name
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE, // database name
+  port: process.env.PORT
 };
 
 /*  API Request to get status of backend 
