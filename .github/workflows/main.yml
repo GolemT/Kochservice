@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+jobs:
+  build:
+    name: get dependencies
+    runs-on: ubuntu-latest
+    steps:
+    - name: setup Node
+      uses: actions/setup-node@latest
+    - name: install dependencies
+      run: npm install
+  run:
+    name: check availability
+    runs-on: ubuntu-latest
+    steps:
+    - name: run program
+      run: npm run dev
+    - name: ping website
+      run: ping localhost:3000
+      
