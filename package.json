@@ -5,7 +5,10 @@
     "dev": "npm-run-all --parallel app backend",
     "start": "next start",
     "backend": "node app/start.js",
-    "app": "next dev"
+    "app": "next dev",
+    "tests": "npx playwright test",
+    "process": "npm-run-all --parallel app backend &",
+    "stop": "pkill -f 'npm-run-all --parallel app backend'"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -21,6 +24,8 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
+    "@types/node": "^20.10.4",
     "sass": "^1.69.0"
   }
 }

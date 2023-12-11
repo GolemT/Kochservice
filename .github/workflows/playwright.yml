@@ -1,0 +1,41 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Start Web Application
+      run: |
+        # Start your web application here (e.g., using a background process)
+        # Replace the following command with the actual command to start your web app
+        npm run process
+    - name: Wait for Web Application to start
+      run:
+        sleep 10  # Wait for the app to start (adjust as needed)
+    - name: Run Playwright tests
+      run: npm run tests
+    - name: Stop Web Application on Success
+      if: ${{ success() }}  # Only run if tests succeed
+      run: |
+        # Stop your web application here (e.g., using a specific script or process)
+        # Replace the following command with the actual command to stop your web app
+        npm run stop
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
