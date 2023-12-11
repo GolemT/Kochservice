@@ -8,7 +8,7 @@ dotenv.config();
 
 // Database connection configuration
 const dbConfig = {
-  host: process.env.host,
+  host: process.env.HOST,
   user: process.env.USER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
