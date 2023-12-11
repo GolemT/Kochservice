@@ -37,12 +37,6 @@ jobs:
         sleep 10  # Wait for the app to start (adjust as needed)
     - name: Run Playwright tests
       run: npm run tests
-    # - name: Stop Web Application on Success
-    #   if: ${{ success() }}  # Only run if tests succeed
-    #   run: |
-    #     # Stop your web application here (e.g., using a specific script or process)
-    #     # Replace the following command with the actual command to stop your web app
-    #     npm run stop
     - uses: actions/upload-artifact@v3
       if: always()
       with:

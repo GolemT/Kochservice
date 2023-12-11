@@ -7,8 +7,7 @@
     "backend": "node app/start.js",
     "app": "next dev",
     "tests": "npx playwright test",
-    "process": "npm-run-all --parallel app backend &",
-    "stop": "pkill -f 'npm-run-all --parallel app backend'"
+    "process": "npm-run-all --parallel app backend &"
   },
   "dependencies": {
     "cors": "^2.8.5",
