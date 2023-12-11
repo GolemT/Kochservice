@@ -12,7 +12,7 @@ const dbConfig = {
   user: process.env.USER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
-  port: process.env.PORT,
+  port: 3305,
 };
 
 // Function to establish a database connection
