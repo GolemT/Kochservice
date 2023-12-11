@@ -9,7 +9,7 @@ export function RecipeList() {
 
     useEffect(() => {
         // Fetch the data from your API
-        fetch('http://localhost:3000/api/getRecipeNames')
+        fetch('/api/getRecipeNames')
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -52,7 +52,7 @@ export function getPageContent(ID){
 
     useEffect(() => {
     // Make the API request when the component mounts
-        fetch(`http://localhost:3000/api/getObject?objectId=${ID}`)
+        fetch(`/api/getObject?objectId=${ID}`)
         .then((response) => {
             if (response.ok) {
                 return response.json();
@@ -110,7 +110,7 @@ export function getSearch(input) {
     useEffect(() => {
       if (input) {
         // Make the API request when the component mounts
-        fetch(`http://localhost:3000/api/getSearch?input=${input}`)
+        fetch(`/api/getSearch?input=${input}`)
           .then((response) => {
             if (response.ok) {
               return response.json();
@@ -157,7 +157,7 @@ let count = 5
 async function getCount() {
     const [data, setData] = useState(null);
   
-        const response = await fetch('http://localhost:3000/api/getAmount')
+        const response = await fetch('/api/getAmount')
     
         if (!response.ok) {
             throw new Error('Network response was not okay')
