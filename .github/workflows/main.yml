@@ -31,10 +31,10 @@ jobs:
       run: |
         # Start your web application here (e.g., using a background process)
         # Replace the following command with the actual command to start your web app
-        npm run dev
-    - name: Wait for Web Application to start
-      run:
-        sleep 10  # Wait for the app to start (adjust as needed)
+        npm run process
+    # - name: Wait for Web Application to start
+    #   run:
+    #     sleep 10  # Wait for the app to start (adjust as needed)
     - name: Run Playwright tests
       run: npm run tests
     - uses: actions/upload-artifact@v3

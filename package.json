@@ -7,7 +7,7 @@
     "backend": "node app/start.js",
     "app": "npm-run-all --parallel dev backend",
     "tests": "npx playwright test",
-    "process": "npm-run-all --parallel dev backend &"
+    "process": "npm run dev &"
   },
   "dependencies": {
     "cors": "^2.8.5",
