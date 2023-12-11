@@ -8,10 +8,10 @@ dotenv.config();
 
 // Database connection configuration
 const dbConfig = {
-  host: process.env.HOST,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
-  database: process.env.DATABASE,
+  host: 'q42.h.filess.io',
+  user: 'Kochservice_secondsave',
+  password: '512e33c9bd6dea412fb8471eb338b82163849340',
+  database: 'Kochservice_secondsave',
   port: 3305,
 };
 
