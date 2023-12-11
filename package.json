@@ -2,18 +2,18 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "npm-run-all --parallel app backend",
+    "dev": "next dev",
     "start": "next start",
     "backend": "node app/start.js",
-    "app": "next dev",
+    "app": "npm-run-all --parallel dev backend",
     "tests": "npx playwright test",
-    "process": "npm-run-all --parallel app backend &"
+    "process": "npm-run-all --parallel dev backend &"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "mysql2": "^3.6.2",
+    "mysql2": "^3.6.5",
     "next": "latest",
     "npm-run-all": "^4.1.5",
     "react": "^18.2.0",

@@ -31,7 +31,7 @@ jobs:
       run: |
         # Start your web application here (e.g., using a background process)
         # Replace the following command with the actual command to start your web app
-        npm run process
+        npm run dev
     - name: Wait for Web Application to start
       run:
         sleep 10  # Wait for the app to start (adjust as needed)
