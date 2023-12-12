@@ -4,6 +4,7 @@ import Head from 'next/head';
 import Navbar from './navbar';
 import styles from '../styles/Home.module.css';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from '@vercel/analytics/react';
 
 const Layout = ({ children }) => {
   return (
@@ -14,7 +15,10 @@ const Layout = ({ children }) => {
             <link rel="icon" href="/favicon.ico" />
         </Head>
         <Navbar />
-        <main>{children}</main>
+        <main>
+            {children}
+            <Analytics />
+        </main>
         <footer>
             <a
             href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
