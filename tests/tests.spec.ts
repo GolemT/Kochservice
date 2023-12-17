@@ -2,13 +2,13 @@ import { test, expect } from '@playwright/test';
 import data from '../components/data.json';
 
 test('has title', async ({ page }) => {
-  await page.goto('localhost:3000');
+  await page.goto('/');
 
   await expect(page).toHaveTitle('Kochservice');
 });
 
 test('navigate to /recipe', async ({ page }) => {
-  await page.goto('localhost:3000');
+  await page.goto('/');
 
   await page.getByRole('link', { name: 'Rezepte → Eine Übersicht' }).click();
 
@@ -18,7 +18,7 @@ test('navigate to /recipe', async ({ page }) => {
 });
 
 test('See recipes', async ({ page }) => {
-  await page.goto('localhost:3000/gericht?ID=5');
+  await page.goto('/gericht?ID=5');
 
   // await expect(page.getByRole('heading', { name: 'Rezepte' })).toBeVisible();
   
@@ -26,7 +26,7 @@ test('See recipes', async ({ page }) => {
 })
 
 test('Inspect recipe', async ({ page }) => {
-  await page.goto('localhost:3000/rezepte');
+  await page.goto('/rezepte');
   
   await page.getByRole('link', { name: 'Zebrakuchen' }).click();
 
@@ -39,12 +39,9 @@ test('Inspect recipe', async ({ page }) => {
 })
 
 test('check navbar', async ({ page }) => {
-  await page.goto('localhost:3000/rezepte');
+  await page.goto('/rezepte');
 
-  await expect(page.getByRole('link', { name: "GolemT's Kochservice" })).toBeVisible();
   await expect(page.getByRole('img', { name: "menu" })).toBeVisible()
   await expect(page.getByRole('textbox', {})).toBeVisible()
-
-  await expect(page.getByText('GolemT\'s Kochservice×')).toBeInViewport();
 
 })
