@@ -40,5 +40,15 @@
             "Schritt 2": "Eine Pfanne mit ein bisschen Öl auf mittlere Temperatur bringen. Eier hineingeben. Fallsman Käse oder ähnliches im Omlett haben möchte nun dazugeben.",
             "Schritt 3": "Das ganze für ca. 5 Minuten kochen. Danach umdrehen und nochmal von der anderen Seite kochen. ODER: Kochen mit Deckel auf der Pfanne. So wird die Überseite etwas fester. Nach 10 min das Omlette in der Hälfte einklappen"
         }
+    },
+    "5": {
+        "title": "Zebrakuchen",
+        "pic": "/public/recipes/Zebrakuchen.png",
+        "ingredients": "300g Mehl, 1 Pck. Backpulver, 200g Zucker, 4 Eier, 250ml Speiseöl, 100ml Milch, 2EL Backkakao, 1 Pck. Vanillinzucker, 100g Puderzucker, 2-3EL Zitronensaft",
+        "preparation": {
+            "Schritt 1": "Backofen auf 180 Grad (Umluft: 160 Grad) vorheizen. Springform (Ø 26 cm) mit Backpapier auslegen. Mehl mit Backpulver und Zucker in einer Schüssel mischen. Eier, Öl und Milch zugeben und 2 Min. schaumig schlagen. Die Hälfte des Teiges in eine Schüssel füllen und mit Kakao und Vanillinzucker verrühren.",
+            "Schritt 2": "Nun 2-3 EL des hellen Teiges in die Mitte des Springformbodens geben. Direkt auf den hellen Teig mittig 2-3 EL dunklen Teig geben. Der Teig fängt dadurch an nach außen zu verlaufen. Die zwei Teige auf diese Art und Weise immer von der Mitte aus verbrauchen bis der Springformboden komplett bedeckt ist. Im Backofen ca. 40 Min. backen. Nach dem Backen auf einem Kuchenrost erkalten lassen.",
+            "Schritt 3": "Zebrakuchen aus der Form lösen und auf eine Kuchenplatte setzen. Puderzucker mit Zitronensaft verrühren und den Kuchen dünn damit bestreichen, sodass von oben noch die Marmorierung zu sehen ist. Nach Belieben bunt garnieren."
+        }
     }
 }
