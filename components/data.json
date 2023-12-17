@@ -50,5 +50,17 @@
             "Schritt 2": "Nun 2-3 EL des hellen Teiges in die Mitte des Springformbodens geben. Direkt auf den hellen Teig mittig 2-3 EL dunklen Teig geben. Der Teig fängt dadurch an nach außen zu verlaufen. Die zwei Teige auf diese Art und Weise immer von der Mitte aus verbrauchen bis der Springformboden komplett bedeckt ist. Im Backofen ca. 40 Min. backen. Nach dem Backen auf einem Kuchenrost erkalten lassen.",
             "Schritt 3": "Zebrakuchen aus der Form lösen und auf eine Kuchenplatte setzen. Puderzucker mit Zitronensaft verrühren und den Kuchen dünn damit bestreichen, sodass von oben noch die Marmorierung zu sehen ist. Nach Belieben bunt garnieren."
         }
+    },
+    "6": {
+        "title": "Tiramisu",
+        "pic": "public/recipes/Tiramisu.png",
+        "ingredients": "3 Eier, 4 EL Zucker, 250g Mascarpone, 1/4 L Kalter Espresso, 6 cl Amaretto, 200g Löffelbisquit, Kakaopulver",
+        "preparation": {
+            "schritt 1": "Eier trennen, Eigelb und Zucker in einer Rührschüssel schaumig schlagen, bis die Masse ganz hellgelb und dick wird. Das Eiweiß zu Schnee schlagen", 
+            "Schritt 2": "Mascarpone löffelweise in die Eigelbmasse geben und zu einer homogenen Masse verrühren. Zum Schluss den Eischnee unterziehen.", 
+            "Schritt 3": "Den Espresso mit dem Amaretto mischen, in einen tiefen Teller geben und die Hälfte des Bisquits kurz eintauchen. Den Bodern einer flachen Glasform damit auslegen. Die Hälfte der Mascarponecreme darüber geben.", 
+            "Schritt 4": "Restliche Bisquits in die Flüssigkeit tauchen und einschichten. Die übrige Creme darüber geben und die Oberfläche glatt streichen.", 
+            "Schritt 5": "Tiramisu zugedeckt ca. 2 Std. im Kühlschrank kalt stellen. Vor dem Servieren dick mit Kakaopulver bestäuben."
+        }
     }
 }

@@ -73,7 +73,7 @@ export function getPageContent(ID){
         return (
           <document>
             <div className={styles.name}>
-              <h2>{objectData.title}</h2>
+              <h1 className={styles.title}>{objectData.title}</h1>
               <img src={objectData.pic} alt="Bild" className={styles.pic}/>
             </div>    
             <div>

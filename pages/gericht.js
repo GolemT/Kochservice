@@ -9,9 +9,6 @@ export default function Gericht() {
   return (
     <Layout>
       <main>
-        <h1 className={styles.title}>
-            Rezept
-        </h1>
         <div className={styles.grid}>
           {getPageContent(ID)}
         </div>
