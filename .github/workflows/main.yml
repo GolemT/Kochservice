@@ -32,16 +32,16 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Start Web Application
-      run: |
-        # Start your web application here (e.g., using a background process)
-        # Replace the following command with the actual command to start your web app
-        npm run process
-    - name: Wait for Web Application to start
-      run:
-        sleep 10  # Wait for the app to start (adjust as needed)
+    # - name: Start Web Application
+    #   run: |
+    #     # Start your web application here (e.g., using a background process)
+    #     # Replace the following command with the actual command to start your web app
+    #     npm run process
+    # - name: Wait for Web Application to start
+    #   run:
+    #     sleep 10  # Wait for the app to start (adjust as needed)
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npm run tests
     - uses: actions/upload-artifact@v3
       if: always()
       with:
