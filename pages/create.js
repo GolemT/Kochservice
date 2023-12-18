@@ -2,7 +2,7 @@ import Layout from "../components/Layout";
 import styles from "../styles/Home.module.css";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import ImageUpload from "../components/imageUpload"
+// import ImageUpload from "../components/imageUpload"
 
 export default function Create() {
   const router = useRouter();
