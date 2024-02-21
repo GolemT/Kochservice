@@ -14,6 +14,10 @@ Die Anwendung läuft auf dem Javascript Framework [NextJS](https://nextjs.org) i
 
 MariaDB wurde als Datenbank genutzt da keinerlei Lizensen benötigt werden und eine relationale Datenbank für die gespeicherten Rezepte benötigt wird.
 
+#### Testing
+
+Zum Testen der Funktionalität der Anwendung wird das Testframework Playwright benutzt. Tests werden in Typescript geschrieben und automatisch ausgeführt sobald ein neuer Commit gepusht wird.
+
 ##### Datastructure:
 
 - ID (int)
