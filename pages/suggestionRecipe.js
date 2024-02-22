@@ -1,5 +1,5 @@
 import styles from '../styles/Home.module.css';
-import { getPageContent } from '../app/requests/getPageContent.js'
+import { getPageContentSuggestion } from '../app/requests/getPageContentSuggestion.js'
 import { useRouter} from 'next/router'
 import Layout from '../components/Layout';
 
@@ -10,7 +10,7 @@ export default function Gericht() {
     <Layout>
       <main>
         <div className={styles.grid}>
-          {getPageContent(ID)}
+          {getPageContentSuggestion(ID)}
         </div>
       </main>
     </Layout>

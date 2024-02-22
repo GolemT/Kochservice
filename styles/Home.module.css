@@ -171,6 +171,15 @@
   border-radius: 30px;
   cursor: pointer;
 }
+
+.statusvalid {
+  color: chartreuse;
+}
+
+.statusinvalid {
+  color: crimson;
+}
+
 @media (max-width: 600px) {
   .grid {
     width: 100%;

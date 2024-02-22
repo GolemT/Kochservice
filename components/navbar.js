@@ -35,7 +35,7 @@ const Navbar = () => {
         <Link className={styles.Link} href="/">Home</Link>
         <Link className={styles.Link} href="/rezepte">Rezepte</Link>
         <Link className={styles.Link} href={`/gericht?ID=${num}`} passHref>Random</Link>
-        <Link className={styles.Link} href="/vorschlaege">Vorschläge</Link>
+        <Link className={styles.Link} href="/createSuggestion">Vorschläge</Link>
         <Link className={styles.Link} href="/kontakt">Kontakt</Link>
       </div>
     </div>

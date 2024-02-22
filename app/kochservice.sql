@@ -47,7 +47,21 @@ INSERT INTO `recipe` (`ID`, `title`, `pic`, `ingredients`, `preparation`) VALUES
 (2, 'Frittiertes Hühnchen mit Reis', 'recipes/FrittiertesHuehnchenMitReis.png', 'Hühnchenfilet, Mehl, Stärke, Soja sauce, Knoblauch, Salz, Pfeffer, Öl, Reis', '{"Schritt 1": "Hühnchenfilet in mundgerecht Stücke schneiden. 3 Knoblauch zehen in stücke schneiden. Nun die Hühnchenstücke und den Knoblauch in eine Schale geben. Soja sauce, Salz & Pfeffer dazugeben und mit der Hand durchmischen. Nun 20 min einziehen lassen.", "Schritt 2": "In einer anderen Schale Stärke & Mehl in gleichen Mengen zusammen mischen. Die Hühnerstückchen nun in das Mehl-Stärke gemisch eingeben und bedecken. Eine Pfanne mit Öl erhitzen und die Stückchen fritieren.", "Schritt 3": "Nach Wunsch kann man die frittierten Stückchen nochmal fritieren. Sie schmecken aber auch so gut :). Den Reis aufsetzten damit er rechtzeitig fertig wird. Eine Soße wird gemischt aus Essig, Ketchup, Honig & Soja Sauce. Abschmecken und bei Bedarf anpassen. Die Soße in einer Pfanne leicht erhitzen. Nun die frittierten Hühnchenstücke in die Soße geben sodass diese die Soße aufnehmen. Im Anschluss kann das Gericht serviert werden"}'),
 (3, 'Schnitzel mit gedünstetem Blumenkohl/Brokkoli und Kartoffelpüree', 'recipes/SchnitzelMitGedünstetemBlumenkohlUndKartoffelpueree.png', '1 Blumenkohl/Brokkoli, 5 Kartoffeln, Filets (vom Huhn oder Schwein), 2 Eier, Paniermehl, Salz, Pfeffer, Paprikagewürz, Butter, Milch, Öl', '{"Schritt 1": "Kartoffeln schählen und klein schneiden. Anschließend in einen Topf kochenden Wasser geben zusammen mit einer guten Prise Salz. Das ganze 20 min köcheln lassen. Währenddessen den Stamm vom Blumenkohl/Brokkoli abschneiden und die einzelen Spitzen in einem Dünstaufsatz über einen Topf kochendes Wasser stellen.", "Schritt 2": "Filets auslegen und mit Salz und Paprikagewürz einreiben (Schweinefilets vorher noch klopfen, damit sie zarter werden). Die zwei Eier in einem Teller aufschlagen und verrühren. auf einen anderen Teller Paniermehl streuen. Nun die Filets erst in das Ei einlegen, anschließend im Paniermehl bedecken.", "Schritt 3": "Die Schnitzel dann in einer Pfanne bei mittlerer Temperatur mit Öl anbraten bis sie knusprig sind. Wenn der Blumenkohl/Brokolli noch leichten bis hat vom Herd nehmen. Das Wasser der Kartoffeln abgießen und die Kartoffeln dann stampfen. Dann erst ein bisschen Butter und später einen Schuss Milch unter weiteren Stampfen hinzugeben."}'),
 (4, 'Omlette', 'recipes/Omlette.png', '4 Eier, Milch, Salz, Pfeffer, Öl, (Optional: Käse, Schinken, Paprika)', '{"Schritt 1": "Eier aufbrechen und in einer Schale zusammen verühren. Dazu einen Schuss Milch geben. Mit Salz und Pfeffer würzen", "Schritt 2": "Eine Pfanne mit ein bisschen Öl auf mittlere Temperatur bringen. Eier hineingeben. Fallsman Käse oder ähnliches im Omlett haben möchte nun dazugeben.", "Schritt 3": "Das ganze für ca. 5 Minuten kochen. Danach umdrehen und nochmal von der anderen Seite kochen. ODER: Kochen mit Deckel auf der Pfanne. So wird die Überseite etwas fester. Nach 10 min das Omlette in der Hälfte einklappen"}'),
-(5, 'Zebrakuchen', 'recipes/Zebrakuchen.png', '300g Mehl, 1 Pck. Backpulver, 200g Zucker, 4 Eier, 250ml Speiseöl, 100ml Milch, 2EL Backkakao, 1 Pck. Vanillinzucker, 100g Puderzucker, 2-3EL Zitronensaft', '{"Schritt 1": "Backofen auf 180 Grad (Umluft: 160 Grad) vorheizen. Springform (Ø 26 cm) mit Backpapier auslegen. Mehl mit Backpulver und Zucker in einer Schüssel mischen. Eier, Öl und Milch zugeben und 2 Min. schaumig schlagen. Die Hälfte des Teiges in eine Schüssel füllen und mit Kakao und Vanillinzucker verrühren.", "Schritt 2": "Nun 2-3 EL des hellen Teiges in die Mitte des Springformbodens geben. Direkt auf den hellen Teig mittig 2-3 EL dunklen Teig geben. Der Teig fängt dadurch an nach außen zu verlaufen. Die zwei Teige auf diese Art und Weise immer von der Mitte aus verbrauchen bis der Springformboden komplett bedeckt ist. Im Backofen ca. 40 Min. backen. Nach dem Backen auf einem Kuchenrost erkalten lassen.", "Schritt 3": "Zebrakuchen aus der Form lösen und auf eine Kuchenplatte setzen. Puderzucker mit Zitronensaft verrühren und den Kuchen dünn damit bestreichen, sodass von oben noch die Marmorierung zu sehen ist. Nach Belieben bunt garnieren."}');
+(5, 'Zebrakuchen', 'recipes/Zebrakuchen.png', '300g Mehl, 1 Pck. Backpulver, 200g Zucker, 4 Eier, 250ml Speiseöl, 100ml Milch, 2EL Backkakao, 1 Pck. Vanillinzucker, 100g Puderzucker, 2-3EL Zitronensaft', '{"Schritt 1": "Backofen auf 180 Grad (Umluft: 160 Grad) vorheizen. Springform (Ø 26 cm) mit Backpapier auslegen. Mehl mit Backpulver und Zucker in einer Schüssel mischen. Eier, Öl und Milch zugeben und 2 Min. schaumig schlagen. Die Hälfte des Teiges in eine Schüssel füllen und mit Kakao und Vanillinzucker verrühren.", "Schritt 2": "Nun 2-3 EL des hellen Teiges in die Mitte des Springformbodens geben. Direkt auf den hellen Teig mittig 2-3 EL dunklen Teig geben. Der Teig fängt dadurch an nach außen zu verlaufen. Die zwei Teige auf diese Art und Weise immer von der Mitte aus verbrauchen bis der Springformboden komplett bedeckt ist. Im Backofen ca. 40 Min. backen. Nach dem Backen auf einem Kuchenrost erkalten lassen.", "Schritt 3": "Zebrakuchen aus der Form lösen und auf eine Kuchenplatte setzen. Puderzucker mit Zitronensaft verrühren und den Kuchen dünn damit bestreichen, sodass von oben noch die Marmorierung zu sehen ist. Nach Belieben bunt garnieren."}')
+(6, 'Tiramisu', '	pictures/profile.jpg', '3 Eier, 4 EL Zucker, 250g Mascarpone, 1/4 L Kalter Espresso, 6 cl Amaretto, 200g Löffelbisquit, Kakaopulver', '{"schritt 1": "Eier trennen, Eigelb und Zucker in einer Rührschüssel schaumig schlagen, bis die Masse ganz hellgelb und dick wird. Das Eiweiß zu Schnee schlagen", "Schritt 2": "Mascarpone löffelweise in die Eigelbmasse geben und zu einer homogenen Masse verrühren. Zum Schluss den Eischnee unterziehen.", "Schritt 3": "Den Espresso mit dem Amaretto mischen, in einen tiefen Teller geben und die Hälfte des Bisquits kurz eintauchen. Den Bodern einer flachen Glasform damit auslegen. Die Hälfte der Mascarponecreme darüber geben.", "Schritt 4": "Restliche Bisquits in die Flüssigkeit tauchen und einschichten. Die übrige Creme darüber geben und die Oberfläche glatt streichen.", "Schritt 5": "Tiramisu zugedeckt ca. 2 Std. im Kühlschrank kalt stellen. Vor dem Servieren dick mit Kakaopulver bestäuben."}');
+
+--
+-- Tabellenstruktur für Tabelle `suggestion`
+--
+DROP TABLE IF EXISTS `suggestion`;
+CREATE TABLE `suggestion` (
+  `ID` int(11) NOT NULL,
+  `title` text NOT NULL,
+  `pic` text NOT NULL,
+  `ingredients` text NOT NULL,
+  `preparation` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indizes der exportierten Tabellen
 --
@@ -59,6 +73,11 @@ ALTER TABLE `recipe`
   ADD PRIMARY KEY (`ID`);
 
 --
+-- Indizes für die Tabelle `suggestion`
+--
+ALTER TABLE `suggestion`
+  ADD PRIMARY KEY (`ID`);
+--
 -- AUTO_INCREMENT für exportierte Tabellen
 --
 
@@ -66,6 +85,12 @@ ALTER TABLE `recipe`
 -- AUTO_INCREMENT für Tabelle `recipe`
 --
 ALTER TABLE `recipe`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+--
+--
+ALTER TABLE `suggestion`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 

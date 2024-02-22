@@ -1,21 +1,21 @@
 import styles from '../styles/Home.module.css';
-import { RecipeList } from '../app/requests/RecipeList.js'
 import Layout from '../components/Layout.js';
+import { SuggestionList } from '../app/requests/SuggestionList.js';
  
 export default function Home() {
-  const recipeList = RecipeList()
+  const suggestionList = SuggestionList()
 
   return (
     <Layout>      
       <main>
         <h1 className={styles.title}>
-          Rezepte!
+          Vorschläge!
         </h1>
 
 
         <div className={styles.grid}>
         
-          {recipeList}
+          {suggestionList}
 
         </div>
       </main>

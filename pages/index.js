@@ -33,7 +33,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/vorschlaege" className={styles.card}>
+            href="/createSuggestion" className={styles.card}>
             <h3>Vorschläge &rarr;</h3>
             <p>Schlage neue Rezepte vor und erweitere unser Sortiment.</p>
           </Link>

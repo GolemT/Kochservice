@@ -62,5 +62,15 @@
             "Schritt 4": "Restliche Bisquits in die Flüssigkeit tauchen und einschichten. Die übrige Creme darüber geben und die Oberfläche glatt streichen.", 
             "Schritt 5": "Tiramisu zugedeckt ca. 2 Std. im Kühlschrank kalt stellen. Vor dem Servieren dick mit Kakaopulver bestäuben."
         }
+    },
+    "7": {
+        "title": "Nudel-Lachs-Auflauf",
+        "pic": "",
+        "ingredients": "Nudeln, Lachs, Spinat, Sahne, Mozarella, geriebener Käse",
+        "preparation": {
+            "Schritt 1": "Den Ofen auf 200°C vorheizen. Nudeln in Wasser nach Anleitung kochen. Lachs leicht in einer Pfanne anbraten und gleichzeitig den Spinat auftauen lassen. Dabei Sahne mit dr zerrupften Mozarella anheizen bis der Käsen schmilzt. Mit Salz, Pfeffer, und Curry würzen",
+            "Schritt 2": "Im Anschluss die Nudeln mit Lachs und Spinat vermischen und in eine Auflaufform füllen. Sahne-Soße übergießen und mit dem geriebenen Käse bedecken. Für ca. 30 min in den Ofen schieben",
+            "Schritt 3": "Nach 30 min aus dem Ofen holen und auf Tellern servieren"
+        }
     }
 }

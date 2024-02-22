@@ -1,5 +1,5 @@
 import styles from '../styles/Home.module.css';
-import { getSearch }  from '../components/logic.js'
+import { getSearch }  from '../app/requests/getSearch.js'
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout.js';
 
