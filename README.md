@@ -1,71 +1,36 @@
-# Kochservice
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Description
+## Getting Started
 
-Dieses Project bildet eine Website um Rezepte für verschiedene Gerichte zu erstellen, anzusehen und mit weiteren zu Teilen.
+First, run the development server:
 
-### Technologies
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-#### Programming
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Die Anwendung läuft auf dem Javascript Framework [NextJS](https://nextjs.org) in Verbindung mit der React library. Sowohl Frontend als auch Backend sind mit Javascript geschrieben und nutzen libraries für diese Sprache.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-#### Database
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-MariaDB wurde als Datenbank genutzt da keinerlei Lizensen benötigt werden und eine relationale Datenbank für die gespeicherten Rezepte benötigt wird.
+## Learn More
 
-#### Testing
+To learn more about Next.js, take a look at the following resources:
 
-Zum Testen der Funktionalität der Anwendung wird das Testframework Playwright benutzt. Tests werden in Typescript geschrieben und automatisch ausgeführt sobald ein neuer Commit gepusht wird.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-##### Datastructure:
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-- ID (int)
-- title (String)
-- pic (String)
-- ingredients (String)
-- preparation (JSON)
+## Deploy on Vercel
 
-## How to Setup/Run
-Um die Anwendung zu starten wird Node.JS und der Paketmanager npm benötigt. Es wird außerdem eine IDE wie Visuall Studio Code empfohlen.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-### Initialisieren der Anwendung
-
-Nachdem man das Projekt heruntergeladen hat benötigt man noch einige libraries. Um die benötigten Dependencies zu installieren im Terminal zuerst folgendes eingeben:
-    
-    npm install
-
-### Run
-
-Um die Anwendung nun zu starten muss nur noch folgende Anweisung in die Console eingeben:
-
-    npm run dev
-
-Dadurch wird Next.js gestartet und die Anwendung ist nun unter [localhost:3000](localhost:3000) erreichbar.
-
-### Credentials & Database
-
-Die Anwendung benötigt die Login Details um sich mit der Datenbank verbinden zu können. Diese können in einer ==.env== Datei gespeichert werden. Diese sollte so aussehen:
-
-    HOST=
-    DATABASE=
-    USER=
-    PASSWORD=
-
-Die Anwendung wird diese Variablen benutzen um sich mit der Datenbank zu verbinden und authorisieren. Eine einfache Datenbank kann man local auf der Maschine hosten. Das XAMPP Controll Panel ist in dieser Hinsicht, aufgrund seines graphischen Userinterface,  sehr einfach zu verstehen.
-
-## How to Use
-
-Die laufende Anwendung ist unter [Kochservice](kochservice.vercel.app) erreichbar. Dies ist immer der aktuelle Stand des main branches.
-
-## License
-
-MIT License
-
-Copyright (c) 2024 GolemT
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
