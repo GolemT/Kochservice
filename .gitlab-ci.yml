@@ -1,9 +1,6 @@
 stages:
-  - quality
-  - build
-  - test
+  - check
   - docker
-  - deploy_dev
   - deploy
 
 variables:
@@ -14,7 +11,7 @@ default:
   image: rust:latest
 
 code_quality:
-  stage: quality
+  stage: check
   script:
     - echo "Checking code quality..."
     - cargo fmt -- --check
@@ -22,22 +19,22 @@ code_quality:
   allow_failure: true
 
 build:
-  stage: build
+  stage: check
   script:
     - echo "Building the application..."
     - cargo build --release
   artifacts:
     paths:
       - target/release/kochservice
+      - Cargo.lock
     expire_in: 1 hour
 
 test:
-  stage: test
+  stage: check
   script:
     - echo "Running unit tests..."
     - cargo test --release
-  dependencies:
-    - build
+  # Tests müssen leider trotzdem kompiliert werden
 
 docker_build:
   stage: docker
@@ -52,13 +49,13 @@ docker_build:
     - docker push $IMAGE_TAG
     - docker push $IMAGE_LATEST
   dependencies:
-    - build
+    - build  # Wichtig: Holt das Binary
   only:
     - main
     - dev
 
 deploy_dev:
-  stage: deploy_dev
+  stage: deploy
   environment: development
   tags:
     - deployment
