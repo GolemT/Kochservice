@@ -67,12 +67,7 @@ deploy_dev:
     - docker pull $IMAGE
     - docker stop backend_dev || true
     - docker rm backend_dev || true
-    - docker run -d --name backend_dev \
-      -p 8180:8080 \
-      -e DATABASE_URL=$DATABASE_URL_DEV \
-      --network kochservice-network \
-      --restart unless-stopped \
-      $IMAGE
+    - docker run -d --name backend_dev -p 8180:8080 -e DATABASE_URL=$DATABASE_URL_DEV --network kochservice-network --restart unless-stopped $IMAGE
   only:
     - dev
 
@@ -89,11 +84,6 @@ deploy:
     - docker pull $IMAGE
     - docker stop backend || true
     - docker rm backend || true
-    - docker run -d --name backend \
-      -p 8080:8080 \
-      -e DATABASE_URL=$DATABASE_URL_PROD \
-      --network kochservice-network \
-      --restart unless-stopped \
-      $IMAGE
+    - docker run -d --name backend -p 8080:8080 -e DATABASE_URL=$DATABASE_URL_PROD --network kochservice-network --restart unless-stopped $IMAGE
   only:
     - main
