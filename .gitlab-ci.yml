@@ -12,6 +12,8 @@ default:
 
 code_quality:
   stage: check
+  before_script:
+    - rustup component add rustfmt clippy
   script:
     - echo "Checking code quality..."
     - cargo fmt -- --check
@@ -34,7 +36,6 @@ test:
   script:
     - echo "Running unit tests..."
     - cargo test --release
-  # Tests müssen leider trotzdem kompiliert werden
 
 docker_build:
   stage: docker
@@ -49,7 +50,7 @@ docker_build:
     - docker push $IMAGE_TAG
     - docker push $IMAGE_LATEST
   dependencies:
-    - build  # Wichtig: Holt das Binary
+    - build
   only:
     - main
     - dev
