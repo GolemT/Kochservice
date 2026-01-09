@@ -1,2 +1,2 @@
-pub mod tag;
 pub mod entities;
+pub mod tag;

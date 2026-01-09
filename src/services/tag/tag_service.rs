@@ -1,13 +1,15 @@
-use sea_orm::{ActiveModelTrait, ColumnTrait, Set};
-use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 use crate::domain::entities::tag;
 use crate::domain::tag::tag::Tag;
 use crate::infrastructure::error::AppError;
-use crate::services::tag::common::{CreateTagCommand, DeleteTagCommand, GetTagCommand, UpdateTagCommand};
+use crate::services::tag::common::{
+    CreateTagCommand, DeleteTagCommand, GetTagCommand, UpdateTagCommand,
+};
+use sea_orm::{ActiveModelTrait, ColumnTrait, Set};
+use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 
 pub async fn create_tag(
     db: &DatabaseConnection,
-    command: CreateTagCommand
+    command: CreateTagCommand,
 ) -> Result<Tag, AppError> {
     let existing = tag::Entity::find()
         .filter(tag::Column::Name.eq(&command.name))
@@ -15,7 +17,10 @@ pub async fn create_tag(
         .await?;
 
     if existing.is_some() {
-        return Err(AppError::Conflict(format!("Tag with name '{}' already exists", command.name)));
+        return Err(AppError::Conflict(format!(
+            "Tag with name '{}' already exists",
+            command.name
+        )));
     }
 
     let tag = Tag::new(command.name);
@@ -25,13 +30,14 @@ pub async fn create_tag(
     Ok(Tag::from(saved))
 }
 
-pub async fn get_tag(
-    db: &DatabaseConnection,
-    command: GetTagCommand
-) -> Result<Tag, AppError> {
-    let existing = tag::Entity::find().filter(tag::Column::Id.eq(command.id)).one(db).await?;
+pub async fn get_tag(db: &DatabaseConnection, command: GetTagCommand) -> Result<Tag, AppError> {
+    let existing = tag::Entity::find()
+        .filter(tag::Column::Id.eq(command.id))
+        .one(db)
+        .await?;
 
-    let model = existing.ok_or_else(|| AppError::NotFound(format!("Tag with id '{}' not found", command.id)))?;
+    let model = existing
+        .ok_or_else(|| AppError::NotFound(format!("Tag with id '{}' not found", command.id)))?;
 
     Ok(Tag::from(model))
 }
@@ -44,7 +50,7 @@ pub async fn get_all(db: &DatabaseConnection) -> Result<Vec<Tag>, AppError> {
 
 pub async fn update_tag(
     db: &DatabaseConnection,
-    command: UpdateTagCommand
+    command: UpdateTagCommand,
 ) -> Result<Tag, AppError> {
     let existing = tag::Entity::find_by_id(command.id)
         .one(db)
@@ -60,12 +66,18 @@ pub async fn update_tag(
 
 pub async fn delete_tag(
     db: &DatabaseConnection,
-    command: DeleteTagCommand
+    command: DeleteTagCommand,
 ) -> Result<(), AppError> {
-    let existing = tag::Entity::find().filter(tag::Column::Id.eq(command.id)).one(db).await?;
+    let existing = tag::Entity::find()
+        .filter(tag::Column::Id.eq(command.id))
+        .one(db)
+        .await?;
 
     if existing.is_none() {
-        return Err(AppError::NotFound(format!("Tag with id '{}' does not exist", command.id)));
+        return Err(AppError::NotFound(format!(
+            "Tag with id '{}' does not exist",
+            command.id
+        )));
     }
 
     tag::Entity::delete_by_id(command.id).exec(db).await?;

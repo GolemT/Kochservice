@@ -1,6 +1,6 @@
-use sea_orm::Set;
 use crate::domain::entities::tag;
 use crate::domain::tag::tag_id::TagId;
+use sea_orm::Set;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Tag {
@@ -12,11 +12,15 @@ impl Tag {
     pub fn new(name: String) -> Tag {
         Tag {
             id: TagId::new(),
-            name
+            name,
         }
     }
-    pub fn id(&self) -> &TagId { &self.id }
-    pub fn name(&self) -> &str { &self.name }
+    pub fn id(&self) -> &TagId {
+        &self.id
+    }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
 }
 
 impl From<tag::Model> for Tag {
@@ -31,7 +35,7 @@ impl From<Tag> for tag::ActiveModel {
     fn from(tag: Tag) -> Self {
         tag::ActiveModel {
             id: Set(tag.id.value()),
-            name: Set(tag.name)
+            name: Set(tag.name),
         }
     }
 }

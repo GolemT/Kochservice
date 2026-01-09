@@ -2,14 +2,12 @@ use uuid::Uuid;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TagId {
-    id: Uuid
+    id: Uuid,
 }
 
 impl TagId {
     pub(crate) fn new() -> Self {
-        TagId {
-            id: Uuid::now_v7()
-        }
+        TagId { id: Uuid::now_v7() }
     }
 
     pub fn value(&self) -> Uuid {

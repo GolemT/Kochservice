@@ -74,7 +74,7 @@ deploy_dev:
 
 deploy:
   stage: deploy
-  environment: Production
+  environment: production
   tags:
     - deployment
   variables:

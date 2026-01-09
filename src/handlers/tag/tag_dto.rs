@@ -1,6 +1,6 @@
+use crate::domain::tag::tag::Tag;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-use crate::domain::tag::tag::Tag;
 use uuid::Uuid;
 
 #[derive(Deserialize, ToSchema)]
@@ -12,7 +12,6 @@ pub struct CreateTagRequest {
 pub struct UpdateTagRequest {
     pub name: String,
 }
-
 
 #[derive(Serialize, ToSchema)]
 pub struct TagResponse {
@@ -41,4 +40,3 @@ impl From<Vec<Tag>> for TagsResponse {
         }
     }
 }
-

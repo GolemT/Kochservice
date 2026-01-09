@@ -1,25 +1,24 @@
-mod infrastructure;
-mod handlers;
 mod domain;
+mod handlers;
+mod infrastructure;
 mod services;
 
-use std::time::Duration;
 use axum::Router;
-use axum::routing::{get};
+use axum::routing::get;
 use sea_orm::{ConnectOptions, Database};
+use std::time::Duration;
 use utoipa::OpenApi;
 use utoipa_scalar::{Scalar, Servable};
 
+use crate::handlers::tag::tag_handler;
 use crate::infrastructure::app_state::AppState;
 use crate::infrastructure::openapi::ApiDoc;
 use handlers::heartbeat::health::health;
-use crate::handlers::tag::tag_handler;
-use sea_orm_migration::MigratorTrait;
 use migration::Migrator;
+use sea_orm_migration::MigratorTrait;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-
     // Load environment variables
     dotenvy::dotenv().ok();
     let database_url = std::env::var("DATABASE_URL")?;
@@ -39,7 +38,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Migrator::up(&db, None).await?;
 
     // Application State for handlers
-    let app_state = AppState {db};
+    let app_state = AppState { db };
 
     let router = Router::new()
         .route("/health", get(health))
@@ -49,8 +48,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // .route("/ingredient", get(get_ingredients).post(create_ingredient))
         // .route("/ingredient/{id}", get(get_ingredient).delete(delete_ingredient))
         //
-        .route("/tag", get(tag_handler::get_tags).post(tag_handler::create_tag))
-        .route("/tag/{id}", get(tag_handler::get_tag).delete(tag_handler::delete_tag).put(tag_handler::update_tag))
+        .route(
+            "/tag",
+            get(tag_handler::get_tags).post(tag_handler::create_tag),
+        )
+        .route(
+            "/tag/{id}",
+            get(tag_handler::get_tag)
+                .delete(tag_handler::delete_tag)
+                .put(tag_handler::update_tag),
+        )
         .with_state(app_state)
         .merge(Scalar::with_url("/scalar", ApiDoc::openapi()));
 
