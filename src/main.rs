@@ -14,6 +14,8 @@ use crate::infrastructure::app_state::AppState;
 use crate::infrastructure::openapi::ApiDoc;
 use handlers::heartbeat::health::health;
 use crate::handlers::tag::tag_handler;
+use sea_orm_migration::MigratorTrait;
+use migration::Migrator;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -34,6 +36,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .sqlx_logging_level(log::LevelFilter::Info);
     let db = Database::connect(opt).await?;
 
+    Migrator::up(&db, None).await?;
+
     // Application State for handlers
     let app_state = AppState {db};
 
@@ -53,8 +57,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
     axum::serve(listener, router).await?;
 
-    println!("Server running on http://127.0.0.1:3000");
-    println!("Scalar UI at http://127.0.0.1:3000/scalar");
+    println!("Server running on http://127.0.0.1:8080");
+    println!("Scalar UI at http://127.0.0.1:8080/scalar");
 
     // Closing connection here
     let db = Database::connect(&database_url).await?;

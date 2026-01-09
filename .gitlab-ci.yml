@@ -1,0 +1,102 @@
+stages:
+  - quality
+  - build
+  - test
+  - docker
+  - deploy_dev
+  - deploy
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+
+default:
+  image: rust:latest
+
+code_quality:
+  stage: quality
+  script:
+    - echo "Checking code quality..."
+    - cargo fmt -- --check
+    - cargo clippy -- -D warnings
+  allow_failure: true
+
+build:
+  stage: build
+  script:
+    - echo "Building the application..."
+    - cargo build --release
+  artifacts:
+    paths:
+      - target/release/kochservice
+    expire_in: 1 hour
+
+test:
+  stage: test
+  script:
+    - echo "Running unit tests..."
+    - cargo test --release
+  dependencies:
+    - build
+
+docker_build:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - echo "Building Docker image..."
+    - docker build -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker push $IMAGE_TAG
+    - docker push $IMAGE_LATEST
+  dependencies:
+    - build
+  only:
+    - main
+    - dev
+
+deploy_dev:
+  stage: deploy_dev
+  environment: development
+  tags:
+    - deployment
+  variables:
+    IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  script:
+    - echo "Deploying to DEV environment..."
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE
+    - docker stop backend_dev || true
+    - docker rm backend_dev || true
+    - docker run -d --name backend_dev \
+      -p 8180:8080 \
+      -e DATABASE_URL=$DATABASE_URL_DEV \
+      --network kochservice-network \
+      --restart unless-stopped \
+      $IMAGE
+  only:
+    - dev
+
+deploy:
+  stage: deploy
+  environment: Production
+  tags:
+    - deployment
+  variables:
+    IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  script:
+    - echo "Deploying to PROD environment..."
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE
+    - docker stop backend || true
+    - docker rm backend || true
+    - docker run -d --name backend \
+      -p 8080:8080 \
+      -e DATABASE_URL=$DATABASE_URL_PROD \
+      --network kochservice-network \
+      --restart unless-stopped \
+      $IMAGE
+  only:
+    - main
