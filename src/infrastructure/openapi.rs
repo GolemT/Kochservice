@@ -4,6 +4,7 @@ use utoipa::OpenApi;
 #[openapi(
     paths(
         crate::api::heartbeat::health::health,
+        crate::api::openapi_spec::openapi_spec,
         crate::api::tag::tag_handler::create_tag,
         crate::api::tag::tag_handler::get_tags,
         crate::api::tag::tag_handler::get_tag,
