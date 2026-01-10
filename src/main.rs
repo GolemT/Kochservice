@@ -12,6 +12,7 @@ use utoipa_scalar::{Scalar, Servable};
 
 use api::heartbeat::health::health;
 use api::ingredient::ingredient_handler;
+use api::openapi_spec::openapi_spec;
 use api::recipe::recipe_handler;
 use api::tag::tag_handler;
 use infrastructure::app_state::AppState;
@@ -44,6 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let router = Router::new()
         .route("/health", get(health))
+        .route("/openapi", get(openapi_spec))
         .route(
             "/recipe",
             get(recipe_handler::get_recipes).post(recipe_handler::create_recipe),

@@ -10,7 +10,7 @@ use crate::infrastructure::app_state::AppState;
 use crate::infrastructure::error::AppError;
 use axum::{
     Json,
-    extract::{Path, State, Query},
+    extract::{Path, Query, State},
 };
 use uuid::Uuid;
 
