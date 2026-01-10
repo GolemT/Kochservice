@@ -1,12 +1,12 @@
-use crate::handlers::tag::tag_dto::{
+use crate::api::tag::tag_dto::{
     CreateTagRequest, TagResponse, TagsResponse, UpdateTagRequest,
 };
 use crate::infrastructure::app_state::AppState;
 use crate::infrastructure::error::AppError;
-use crate::services::tag::common::{
+use crate::application::tag::common::{
     CreateTagCommand, DeleteTagCommand, GetTagCommand, UpdateTagCommand,
 };
-use crate::services::tag::tag_service;
+use crate::application::tag::tag_service;
 use axum::{
     Json,
     extract::{Path, State},

@@ -1,3 +1,2 @@
-pub mod entities;
 pub mod tag;
 pub mod ingredient;
