@@ -1,12 +1,12 @@
 use crate::api::ingredient::ingredient_dto::{
     CreateIngredientRequest, IngredientResponse, IngredientsResponse, UpdateIngredientRequest,
 };
-use crate::infrastructure::app_state::AppState;
-use crate::infrastructure::error::AppError;
 use crate::application::ingredient::common::{
     CreateIngredientCommand, DeleteIngredientCommand, GetIngredientCommand, UpdateIngredientCommand,
 };
 use crate::application::ingredient::ingredient_service;
+use crate::infrastructure::app_state::AppState;
+use crate::infrastructure::error::AppError;
 use axum::{
     Json,
     extract::{Path, State},
@@ -41,7 +41,9 @@ pub async fn create_ingredient(
     (status = 200, description = "Success", body= IngredientsResponse),
     )
 )]
-pub async fn get_ingredients(State(app_state): State<AppState>) -> Result<Json<IngredientsResponse>, AppError> {
+pub async fn get_ingredients(
+    State(app_state): State<AppState>,
+) -> Result<Json<IngredientsResponse>, AppError> {
     let result = ingredient_service::get_all(&app_state.db).await?;
 
     Ok(Json(result.into()))

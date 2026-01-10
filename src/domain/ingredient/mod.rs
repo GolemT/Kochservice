@@ -1,2 +1,2 @@
-mod ingredient_id;
 pub mod ingredient;
+mod ingredient_id;

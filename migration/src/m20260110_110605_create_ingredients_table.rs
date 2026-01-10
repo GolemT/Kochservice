@@ -1,4 +1,4 @@
-use sea_orm_migration::{prelude::*};
+use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -6,14 +6,23 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-
         manager
             .create_table(
                 Table::create()
                     .table(Ingredient::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Ingredient::Id).uuid().not_null().primary_key())
-                    .col(ColumnDef::new(Ingredient::Name).string().not_null().unique_key())
+                    .col(
+                        ColumnDef::new(Ingredient::Id)
+                            .uuid()
+                            .not_null()
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(Ingredient::Name)
+                            .string()
+                            .not_null()
+                            .unique_key(),
+                    )
                     .to_owned(),
             )
             .await
@@ -30,5 +39,5 @@ impl MigrationTrait for Migration {
 enum Ingredient {
     Table,
     Id,
-    Name
+    Name,
 }

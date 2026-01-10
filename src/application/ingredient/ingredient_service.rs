@@ -1,9 +1,9 @@
-use crate::domain::entities::ingredient;
-use crate::domain::ingredient::ingredient::Ingredient;
-use crate::infrastructure::error::AppError;
 use crate::application::ingredient::common::{
     CreateIngredientCommand, DeleteIngredientCommand, GetIngredientCommand, UpdateIngredientCommand,
 };
+use crate::domain::entities::ingredient;
+use crate::domain::ingredient::ingredient::Ingredient;
+use crate::infrastructure::error::AppError;
 use sea_orm::{ActiveModelTrait, ColumnTrait, Set};
 use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 
@@ -30,14 +30,18 @@ pub async fn create_ingredient(
     Ok(Ingredient::from(saved))
 }
 
-pub async fn get_ingredient(db: &DatabaseConnection, command: GetIngredientCommand) -> Result<Ingredient, AppError> {
+pub async fn get_ingredient(
+    db: &DatabaseConnection,
+    command: GetIngredientCommand,
+) -> Result<Ingredient, AppError> {
     let existing = ingredient::Entity::find()
         .filter(ingredient::Column::Id.eq(command.id))
         .one(db)
         .await?;
 
-    let model = existing
-        .ok_or_else(|| AppError::NotFound(format!("Ingredient with id '{}' not found", command.id)))?;
+    let model = existing.ok_or_else(|| {
+        AppError::NotFound(format!("Ingredient with id '{}' not found", command.id))
+    })?;
 
     Ok(Ingredient::from(model))
 }
@@ -55,7 +59,9 @@ pub async fn update_ingredient(
     let existing = ingredient::Entity::find_by_id(command.id)
         .one(db)
         .await?
-        .ok_or_else(|| AppError::NotFound(format!("Ingredient with id '{}' not found", command.id)))?;
+        .ok_or_else(|| {
+            AppError::NotFound(format!("Ingredient with id '{}' not found", command.id))
+        })?;
 
     let mut active: ingredient::ActiveModel = existing.into();
     active.name = Set(command.name);
@@ -80,7 +86,9 @@ pub async fn delete_ingredient(
         )));
     }
 
-    ingredient::Entity::delete_by_id(command.id).exec(db).await?;
+    ingredient::Entity::delete_by_id(command.id)
+        .exec(db)
+        .await?;
 
     Ok(())
 }

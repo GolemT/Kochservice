@@ -1,6 +1,6 @@
-use sea_orm::Set;
 use crate::domain::entities::ingredient;
-use crate::domain::ingredient::ingredient_id::IngredientId;
+pub(crate) use crate::domain::ingredient::ingredient_id::IngredientId;
+use sea_orm::Set;
 
 pub struct Ingredient {
     id: IngredientId,
@@ -11,7 +11,7 @@ impl Ingredient {
     pub fn new(name: String) -> Self {
         Self {
             id: IngredientId::new(),
-            name
+            name,
         }
     }
 
@@ -22,7 +22,6 @@ impl Ingredient {
         &self.name
     }
 }
-
 
 impl From<ingredient::Model> for Ingredient {
     fn from(ingredient: ingredient::Model) -> Self {
