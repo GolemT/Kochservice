@@ -36,7 +36,10 @@ impl From<Ingredient> for IngredientResponse {
 impl From<Vec<Ingredient>> for IngredientsResponse {
     fn from(ingredients: Vec<Ingredient>) -> Self {
         IngredientsResponse {
-            ingredients: ingredients.into_iter().map(IngredientResponse::from).collect(),
+            ingredients: ingredients
+                .into_iter()
+                .map(IngredientResponse::from)
+                .collect(),
         }
     }
 }

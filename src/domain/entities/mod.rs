@@ -3,4 +3,7 @@
 pub mod prelude;
 
 pub mod ingredient;
+pub mod recipe;
+pub mod recipe_ingredient;
+pub mod recipe_tag;
 pub mod tag;
