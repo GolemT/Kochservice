@@ -1,7 +1,7 @@
 mod domain;
-mod handlers;
+mod api;
 mod infrastructure;
-mod services;
+mod application;
 
 use axum::Router;
 use axum::routing::get;
@@ -10,10 +10,11 @@ use std::time::Duration;
 use utoipa::OpenApi;
 use utoipa_scalar::{Scalar, Servable};
 
-use crate::handlers::tag::tag_handler;
-use crate::infrastructure::app_state::AppState;
-use crate::infrastructure::openapi::ApiDoc;
-use handlers::heartbeat::health::health;
+use api::tag::tag_handler;
+use api::ingredient::ingredient_handler;
+use infrastructure::app_state::AppState;
+use infrastructure::openapi::ApiDoc;
+use api::heartbeat::health::health;
 use migration::Migrator;
 use sea_orm_migration::MigratorTrait;
 
@@ -37,17 +38,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Migrator::up(&db, None).await?;
 
-    // Application State for handlers
+    // Application State for api
     let app_state = AppState { db };
 
     let router = Router::new()
         .route("/health", get(health))
         // .route("/recipe", get(get_users).post(create_user))
-        // .route("/recipe/{id}", get(get_user).delete(delete_user))
+        // .route("/recipe/{id}", get(get_user).delete(delete_user).put(update_recipe))
         //
-        // .route("/ingredient", get(get_ingredients).post(create_ingredient))
-        // .route("/ingredient/{id}", get(get_ingredient).delete(delete_ingredient))
-        //
+        .route("/ingredient", get(ingredient_handler::get_ingredients).post(ingredient_handler::create_ingredient))
+        .route("/ingredient/{id}", get(ingredient_handler::get_ingredient).delete(ingredient_handler::delete_ingredient).put(ingredient_handler::update_ingredient))
+
         .route(
             "/tag",
             get(tag_handler::get_tags).post(tag_handler::create_tag),

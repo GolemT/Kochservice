@@ -8,8 +8,6 @@ pub struct GetTagCommand {
     pub id: Uuid,
 }
 
-pub struct GetTagsCommand {}
-
 pub struct UpdateTagCommand {
     pub id: Uuid,
     pub name: String,

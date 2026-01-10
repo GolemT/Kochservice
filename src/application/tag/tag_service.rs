@@ -1,7 +1,7 @@
 use crate::domain::entities::tag;
 use crate::domain::tag::tag::Tag;
 use crate::infrastructure::error::AppError;
-use crate::services::tag::common::{
+use crate::application::tag::common::{
     CreateTagCommand, DeleteTagCommand, GetTagCommand, UpdateTagCommand,
 };
 use sea_orm::{ActiveModelTrait, ColumnTrait, Set};
