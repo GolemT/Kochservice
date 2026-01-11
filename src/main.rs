@@ -16,6 +16,7 @@ use api::openapi_spec::openapi_spec;
 use api::recipe::recipe_handler;
 use api::tag::tag_handler;
 use infrastructure::app_state::AppState;
+use infrastructure::seeder::{should_seed, seed_all};
 use infrastructure::openapi::ApiDoc;
 use migration::Migrator;
 use sea_orm_migration::MigratorTrait;
@@ -24,7 +25,7 @@ use sea_orm_migration::MigratorTrait;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load environment variables
     dotenvy::dotenv().ok();
-    let database_url = std::env::var("DATABASE_URL")?;
+    let database_url = std::env::var("DATABASE_URL").expect("Database environmental could not be found");
 
     // Establish database connection
     let mut opt = ConnectOptions::new(&database_url);
@@ -39,6 +40,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db = Database::connect(opt).await?;
 
     Migrator::up(&db, None).await?;
+
+    if should_seed(&db).await? {
+       seed_all(&db).await?;
+    }
 
     // Application State for api
     let app_state = AppState { db };

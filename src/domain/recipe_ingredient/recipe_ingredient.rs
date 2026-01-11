@@ -49,7 +49,11 @@ impl RecipeIngredient {
 pub enum MeasurementType {
     Ml,
     G,
-    Tablespoon,
+    Stück,
+    EL,
+    TL,
+    Päckchen,
+    Prise,
 }
 
 use crate::infrastructure::error::AppError;
@@ -60,13 +64,14 @@ impl FromStr for MeasurementType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "Ml" => Ok(MeasurementType::Ml),
-            "G" => Ok(MeasurementType::G),
-            "Tablespoon" => Ok(MeasurementType::Tablespoon),
-            _ => Err(AppError::BadRequest(format!(
-                "Invalid measurement type: {}",
-                s
-            ))),
+            "ml" => Ok(MeasurementType::Ml),
+            "g" => Ok(MeasurementType::G),
+            "Stück" => Ok(MeasurementType::Stück),
+            "El" => Ok(MeasurementType::EL),
+            "Tl" => Ok(MeasurementType::TL),
+            "Päckchen" => Ok(MeasurementType::Päckchen),
+            "Prise" => Ok(MeasurementType::Prise),
+            _ => Err(AppError::BadRequest(format!("Invalid measurement type: {}", s)))
         }
     }
 }
@@ -74,11 +79,14 @@ impl FromStr for MeasurementType {
 impl Display for MeasurementType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = match self {
-            MeasurementType::Ml => "Ml",
-            MeasurementType::G => "G",
-            MeasurementType::Tablespoon => "Tablespoon",
-        }
-        .to_string();
+            MeasurementType::Ml => "ml",
+            MeasurementType::G => "g",
+            MeasurementType::Stück => "Stück",
+            MeasurementType::EL => "El",
+            MeasurementType::TL => "Tl",
+            MeasurementType::Päckchen => "Päckchen",
+            MeasurementType::Prise => "Prise",
+        }.to_string();
         write!(f, "{}", str)
     }
 }
