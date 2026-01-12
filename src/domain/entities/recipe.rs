@@ -3,18 +3,27 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "tag")]
+#[sea_orm(table_name = "recipe")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     #[sea_orm(unique)]
     pub name: String,
+    pub instructions: Json,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::recipe_ingredient::Entity")]
+    RecipeIngredient,
     #[sea_orm(has_many = "super::recipe_tag::Entity")]
     RecipeTag,
+}
+
+impl Related<super::recipe_ingredient::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::RecipeIngredient.def()
+    }
 }
 
 impl Related<super::recipe_tag::Entity> for Entity {
@@ -23,12 +32,12 @@ impl Related<super::recipe_tag::Entity> for Entity {
     }
 }
 
-impl Related<super::recipe::Entity> for Entity {
+impl Related<super::tag::Entity> for Entity {
     fn to() -> RelationDef {
-        super::recipe_tag::Relation::Recipe.def()
+        super::recipe_tag::Relation::Tag.def()
     }
     fn via() -> Option<RelationDef> {
-        Some(super::recipe_tag::Relation::Tag.def().rev())
+        Some(super::recipe_tag::Relation::Recipe.def().rev())
     }
 }
 
