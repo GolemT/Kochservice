@@ -1,7 +1,7 @@
+mod api;
+mod application;
 mod domain;
-mod handlers;
 mod infrastructure;
-mod services;
 
 use axum::Router;
 use axum::routing::get;
@@ -10,10 +10,14 @@ use std::time::Duration;
 use utoipa::OpenApi;
 use utoipa_scalar::{Scalar, Servable};
 
-use crate::handlers::tag::tag_handler;
-use crate::infrastructure::app_state::AppState;
-use crate::infrastructure::openapi::ApiDoc;
-use handlers::heartbeat::health::health;
+use api::heartbeat::health::health;
+use api::ingredient::ingredient_handler;
+use api::openapi_spec::openapi_spec;
+use api::recipe::recipe_handler;
+use api::tag::tag_handler;
+use infrastructure::app_state::AppState;
+use infrastructure::seeder::{should_seed, seed_all};
+use infrastructure::openapi::ApiDoc;
 use migration::Migrator;
 use sea_orm_migration::MigratorTrait;
 
@@ -21,7 +25,7 @@ use sea_orm_migration::MigratorTrait;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load environment variables
     dotenvy::dotenv().ok();
-    let database_url = std::env::var("DATABASE_URL")?;
+    let database_url = std::env::var("DATABASE_URL").expect("Database environmental could not be found");
 
     // Establish database connection
     let mut opt = ConnectOptions::new(&database_url);
@@ -37,17 +41,36 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Migrator::up(&db, None).await?;
 
-    // Application State for handlers
+    if should_seed(&db).await? {
+       seed_all(&db).await?;
+    }
+
+    // Application State for api
     let app_state = AppState { db };
 
     let router = Router::new()
         .route("/health", get(health))
-        // .route("/recipe", get(get_users).post(create_user))
-        // .route("/recipe/{id}", get(get_user).delete(delete_user))
-        //
-        // .route("/ingredient", get(get_ingredients).post(create_ingredient))
-        // .route("/ingredient/{id}", get(get_ingredient).delete(delete_ingredient))
-        //
+        .route("/openapi", get(openapi_spec))
+        .route(
+            "/recipe",
+            get(recipe_handler::get_recipes).post(recipe_handler::create_recipe),
+        )
+        .route(
+            "/recipe/{id}",
+            get(recipe_handler::get_recipe)
+                .delete(recipe_handler::delete_recipe)
+                .put(recipe_handler::update_recipe),
+        )
+        .route(
+            "/ingredient",
+            get(ingredient_handler::get_ingredients).post(ingredient_handler::create_ingredient),
+        )
+        .route(
+            "/ingredient/{id}",
+            get(ingredient_handler::get_ingredient)
+                .delete(ingredient_handler::delete_ingredient)
+                .put(ingredient_handler::update_ingredient),
+        )
         .route(
             "/tag",
             get(tag_handler::get_tags).post(tag_handler::create_tag),

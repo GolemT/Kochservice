@@ -3,7 +3,7 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "tag")]
+#[sea_orm(table_name = "ingredient")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
@@ -13,22 +13,13 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::recipe_tag::Entity")]
-    RecipeTag,
+    #[sea_orm(has_many = "super::recipe_ingredient::Entity")]
+    RecipeIngredient,
 }
 
-impl Related<super::recipe_tag::Entity> for Entity {
+impl Related<super::recipe_ingredient::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::RecipeTag.def()
-    }
-}
-
-impl Related<super::recipe::Entity> for Entity {
-    fn to() -> RelationDef {
-        super::recipe_tag::Relation::Recipe.def()
-    }
-    fn via() -> Option<RelationDef> {
-        Some(super::recipe_tag::Relation::Tag.def().rev())
+        Relation::RecipeIngredient.def()
     }
 }
 
