@@ -1,12 +1,12 @@
-import type { RecipeResponse } from '@/api/kochservice.schemas'
-import { useState } from 'react'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
+import type {RecipeResponse} from '@/api/kochservice.schemas'
+import {useState} from 'react'
+import {Switch} from '@/components/ui/switch'
+import {Label} from '@/components/ui/label'
 import RecipeCard from '@/components/recipe-card'
 import RecipeListItem from '@/components/recipe-list-item'
-import { Link } from '@tanstack/react-router'
+import {Link} from '@tanstack/react-router'
 
-export default function RecipeViewSwitcher({
+export function RecipeViewSwitcher({
   recipes,
 }: {
   recipes: Array<RecipeResponse>

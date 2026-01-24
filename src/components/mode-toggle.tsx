@@ -1,16 +1,8 @@
-'use client'
+import {Monitor, Moon, Sun} from 'lucide-react'
+import {useTheme} from 'next-themes'
 
-import * as React from 'react'
-import { Moon, Sun, Monitor } from 'lucide-react'
-import { useTheme } from 'next-themes'
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { SidebarMenuButton } from '@/components/ui/sidebar'
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu'
+import {SidebarMenuButton} from '@/components/ui/sidebar'
 
 export function ModeToggle() {
   const { setTheme } = useTheme()

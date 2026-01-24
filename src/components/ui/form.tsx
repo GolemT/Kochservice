@@ -1,67 +1,53 @@
-'use client'
-
 import * as React from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
-import { Slot } from '@radix-ui/react-slot'
-import {
-  Controller,
-  type ControllerProps,
-  type FieldPath,
-  type FieldValues,
-  FormProvider,
-  useFormContext,
-  useFormState,
-} from 'react-hook-form'
+import {Slot} from '@radix-ui/react-slot'
 
-import { cn } from '@/lib/utils'
-import { Label } from '@/components/ui/label'
+import {cn} from '@/lib/utils'
+import {Label} from '@/components/ui/label'
 
-const Form = FormProvider
-
-type FormFieldContextValue<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = {
-  name: TName
+// Context for the current field
+type FormFieldContextValue = {
+  fieldApi: any
 }
 
-const FormFieldContext = React.createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue,
-)
+const FormFieldContext = React.createContext<FormFieldContextValue | null>(null)
 
-const FormField = <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  ...props
-}: ControllerProps<TFieldValues, TName>) => {
+// FormField wrapper
+const FormField = ({
+                     fieldApi,
+                     children
+                   }: {
+  fieldApi: any
+  children: React.ReactNode
+}) => {
   return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
-      <Controller {...props} />
+    <FormFieldContext.Provider value={{fieldApi}}>
+      {children}
     </FormFieldContext.Provider>
   )
 }
 
+// Hook to get field state
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)
-  const { getFieldState } = useFormContext()
-  const formState = useFormState({ name: fieldContext.name })
-  const fieldState = getFieldState(fieldContext.name, formState)
 
   if (!fieldContext) {
     throw new Error('useFormField should be used within <FormField>')
   }
 
   const { id } = itemContext
+  const field = fieldContext.fieldApi
+  const state = field.state
 
   return {
     id,
-    name: fieldContext.name,
+    name: field.name,
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
-    ...fieldState,
+    error: state.meta.errors?.[0],
+    invalid: state.meta.errors.length > 0,
   }
 }
 
@@ -88,9 +74,9 @@ function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function FormLabel({
-  className,
-  ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+                     className,
+                     ...props
+                   }: React.ComponentProps<typeof LabelPrimitive.Root>) {
   const { error, formItemId } = useFormField()
 
   return (
@@ -137,7 +123,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
 
 function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? '') : props.children
+  const body = error ? String(error) : props.children
 
   if (!body) {
     return null
@@ -157,7 +143,6 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
 
 export {
   useFormField,
-  Form,
   FormItem,
   FormLabel,
   FormControl,
