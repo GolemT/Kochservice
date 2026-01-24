@@ -2,13 +2,13 @@ import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import {SidebarProvider} from "@/components/ui/sidebar.tsx";
-import {AppSidebar} from "@/components/ui/app-sidebar.tsx";
+import { SidebarProvider } from '@/components/ui/sidebar.tsx'
+import { AppSidebar } from '@/components/ui/app-sidebar.tsx'
 
 export const Route = createRootRoute({
   component: () => (
     <>
-      <SidebarProvider >
+      <SidebarProvider>
         <AppSidebar />
 
         <Outlet />
@@ -24,7 +24,7 @@ export const Route = createRootRoute({
             {
               name: 'Tanstack Query',
               render: <ReactQueryDevtoolsPanel />,
-            }
+            },
           ]}
         />
       </SidebarProvider>

@@ -1,12 +1,30 @@
 import { createFileRoute } from '@tanstack/react-router'
 import SearchBar from '@/components/search'
-import RecipeViewSwitcher from '@/components/recipe-view-switcher'
+import { useInfiniteRecipes } from '@/hooks/use-Recipe.ts'
+import { HomeLoading } from '@/routes/-home-loading.tsx'
+import VirtualizedRecipeView from '@/components/virtualized-recipe-view.tsx'
 
 export const Route = createFileRoute('/')({
-  component: HomePage
+  component: HomePage,
 })
 
 export function HomePage() {
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteRecipes()
+
+  const allRecipes = data?.pages.flatMap((page) => page.data.recipes) ?? []
+
+  if (isLoading) return <HomeLoading />
+  if (error) {
+    console.error(error)
+    return <div>Error loading recipes</div>
+  }
 
   return (
     <div
@@ -15,7 +33,12 @@ export function HomePage() {
       }
     >
       <SearchBar />
-      <RecipeViewSwitcher recipes={[]} />
+      <VirtualizedRecipeView
+        recipes={allRecipes}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
     </div>
   )
 }

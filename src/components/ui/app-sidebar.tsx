@@ -21,12 +21,13 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
 import { ModeToggle } from '@/components/mode-toggle'
+import { Link } from '@tanstack/react-router'
 
 // Menu items.
 const items = [
   {
     title: 'Home',
-    url: '/home',
+    url: '/',
     icon: Home,
   },
   {
@@ -48,13 +49,13 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild={true}>
-              <a
-                href={'/'}
+              <Link
+                to={'/'}
                 className={'flex flex-row justify-start align-middle'}
               >
                 <Logo />
                 <p className={'ml-2 text-lg font-semibold'}>Kochservice</p>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -67,10 +68,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -96,13 +97,13 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem asChild>
-                  <a href={'/account'}>Account</a>
+                  <Link to={'/account'}>Account</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <a href={'/settings'}>Settings</a>
+                  <Link to={'/settings'}>Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <a href={'/'}>Sign Out</a>
+                  <Link to={'/'}>Sign Out</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

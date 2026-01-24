@@ -1,9 +1,9 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from '@/components/ui/sonner'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,9 +14,9 @@ const queryClient = new QueryClient({
       retry: 3,
     },
     mutations: {
-      retry: 1
-    }
-  }
+      retry: 1,
+    },
+  },
 })
 
 // Import the generated route tree
@@ -48,14 +48,14 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ThemeProvider
-          attribute={'class'}
-          defaultTheme={'system'}
-          enableSystem
-          disableTransitionOnChange
+        attribute={'class'}
+        defaultTheme={'system'}
+        enableSystem
+        disableTransitionOnChange
       >
-        <QueryClientProvider client={queryClient} >
+        <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
-          <Toaster/>
+          <Toaster />
         </QueryClientProvider>
       </ThemeProvider>
     </StrictMode>,

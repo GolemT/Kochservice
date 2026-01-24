@@ -10,7 +10,6 @@
     "orval": "orval",
     "prettier": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "prettier:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
-
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -28,6 +27,7 @@
     "@tanstack/react-query-devtools": "^5.90.20",
     "@tanstack/react-router": "1.156.0",
     "@tanstack/react-router-devtools": "^1.156.0",
+    "@tanstack/react-virtual": "^3.13.18",
     "@tanstack/router-plugin": "1.156.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
