@@ -4,7 +4,7 @@ export const Route = createFileRoute('/search')({
   component: SearchPage,
 })
 
-export function SearchPage() {
+function SearchPage() {
   return (
     <>
       <h1>Search</h1>

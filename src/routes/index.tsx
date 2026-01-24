@@ -8,7 +8,7 @@ export const Route = createFileRoute('/')({
   component: HomePage,
 })
 
-export function HomePage() {
+function HomePage() {
   const {
     data,
     isLoading,

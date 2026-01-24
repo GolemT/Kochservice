@@ -1,16 +1,16 @@
-import * as React from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
 import {Slot} from '@radix-ui/react-slot'
 
 import {cn} from '@/lib/utils'
 import {Label} from '@/components/ui/label'
+import {type ComponentProps, createContext, type ReactNode, useContext, useId} from "react";
 
 // Context for the current field
 type FormFieldContextValue = {
   fieldApi: any
 }
 
-const FormFieldContext = React.createContext<FormFieldContextValue | null>(null)
+const FormFieldContext = createContext<FormFieldContextValue | null>(null)
 
 // FormField wrapper
 const FormField = ({
@@ -18,7 +18,7 @@ const FormField = ({
                      children
                    }: {
   fieldApi: any
-  children: React.ReactNode
+  children: ReactNode
 }) => {
   return (
     <FormFieldContext.Provider value={{fieldApi}}>
@@ -29,8 +29,8 @@ const FormField = ({
 
 // Hook to get field state
 const useFormField = () => {
-  const fieldContext = React.useContext(FormFieldContext)
-  const itemContext = React.useContext(FormItemContext)
+  const fieldContext = useContext(FormFieldContext)
+  const itemContext = useContext(FormItemContext)
 
   if (!fieldContext) {
     throw new Error('useFormField should be used within <FormField>')
@@ -55,12 +55,12 @@ type FormItemContextValue = {
   id: string
 }
 
-const FormItemContext = React.createContext<FormItemContextValue>(
+const FormItemContext = createContext<FormItemContextValue>(
   {} as FormItemContextValue,
 )
 
-function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
-  const id = React.useId()
+function FormItem({ className, ...props }: ComponentProps<'div'>) {
+  const id = useId()
 
   return (
     <FormItemContext.Provider value={{ id }}>
@@ -76,7 +76,7 @@ function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
 function FormLabel({
                      className,
                      ...props
-                   }: React.ComponentProps<typeof LabelPrimitive.Root>) {
+                   }: ComponentProps<typeof LabelPrimitive.Root>) {
   const { error, formItemId } = useFormField()
 
   return (
@@ -90,7 +90,7 @@ function FormLabel({
   )
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
+function FormControl({ ...props }: ComponentProps<typeof Slot>) {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
   return (
@@ -108,7 +108,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   )
 }
 
-function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
+function FormDescription({ className, ...props }: ComponentProps<'p'>) {
   const { formDescriptionId } = useFormField()
 
   return (
@@ -121,7 +121,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
-function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
+function FormMessage({ className, ...props }: ComponentProps<'p'>) {
   const { error, formMessageId } = useFormField()
   const body = error ? String(error) : props.children
 

@@ -4,7 +4,7 @@ export const Route = createFileRoute('/settings')({
   component: SettingsPage,
 })
 
-export function SettingsPage() {
+function SettingsPage() {
   return (
     <>
       <h1>Settings</h1>
