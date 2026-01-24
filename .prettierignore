@@ -1,0 +1,23 @@
+# Dependencies
+  node_modules
+  .pnpm-store
+
+  # Build outputs
+  dist
+  build
+  out
+
+  # Generated files
+  src/api/recipes/
+  src/api/ingredients/
+  src/api/tags/
+  src/api/health/
+  src/api/kochservice.schemas.ts
+
+  # Lock files
+  pnpm-lock.yaml
+  package-lock.json
+
+  # Misc
+  .git
+  .env*

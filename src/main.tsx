@@ -1,10 +1,26 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from '@/components/ui/sonner';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 10,
+      refetchOnWindowFocus: false,
+      retry: 3,
+    },
+    mutations: {
+      retry: 1
+    }
+  }
+})
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 
@@ -31,7 +47,17 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <ThemeProvider
+          attribute={'class'}
+          defaultTheme={'system'}
+          enableSystem
+          disableTransitionOnChange
+      >
+        <QueryClientProvider client={queryClient} >
+          <RouterProvider router={router} />
+          <Toaster/>
+        </QueryClientProvider>
+      </ThemeProvider>
     </StrictMode>,
   )
 }

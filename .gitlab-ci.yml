@@ -1,0 +1,116 @@
+stages:
+  - quality
+  - build
+  - test
+  - docker
+  - deploy_dev
+  - deploy
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - node_modules/
+    - .pnpm-store/
+
+code_quality:
+  stage: quality
+  script:
+    - pnpm install
+    - pnpm prettier --check .
+  allow_failure: true
+
+build:
+  stage: build
+  script:
+    - pnpm install
+    - pnpm build
+  artifacts:
+    paths:
+      - .next/
+      - public/
+      - package.json
+      - pnpm-lock.yaml
+      - next.config.ts
+    expire_in: 1 hour
+
+unit_test:
+  stage: test
+  script:
+    - pnpm install
+    - pnpm test:unit  # vitest
+  dependencies:
+    - build
+  allow_failure: true
+
+# e2e_test:
+#   image: mcr.microsoft.com/playwright:v1.51.1-noble
+#   stage: test
+#   script:
+#     - npm install -g pnpm
+#     - pnpm exec playwright install chrome
+#     - pnpm exec playwright test
+#   dependencies:
+#     - build
+#   artifacts:
+#     when: on_failure
+#     paths:
+#       - playwright-report/
+#     expire_in: 7 days
+#   allow_failure: true
+
+docker_build:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker push $IMAGE_TAG
+    - docker push $IMAGE_LATEST
+  dependencies:
+    - build
+  only:
+    - main
+    - dev
+
+deploy_dev:
+  stage: deploy_dev
+  tags:
+    - deployment
+  variables:
+    IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE
+    - docker stop frontend_dev || true
+    - docker rm frontend_dev || true
+    - docker run -d --name frontend_dev -p 3100:3000 -e NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE_DEV -e NEXT_PUBLIC_DOMAIN=$NEXT_PUBLIC_DOMAIN_DEV --network kochservice-network --restart unless-stopped $IMAGE
+  only:
+    - dev
+  environment:
+    name: dev
+    url: https://dev-kochservice.golemt.org
+
+deploy:
+  stage: deploy
+  tags:
+    - deployment
+  variables:
+    IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE
+    - docker stop frontend || true
+    - docker rm frontend || true
+    - docker run -d --name frontend -p 3000:3000 -e NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE_PROD -e NEXT_PUBLIC_DOMAIN=$NEXT_PUBLIC_DOMAIN_PROD --network kochservice-network --restart unless-stopped $IMAGE
+  only:
+    - main
+  environment:
+    name: prod
+    url: https://kochservice.golemt.org
