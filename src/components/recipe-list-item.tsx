@@ -1,7 +1,6 @@
-import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { TagResponse } from '@/api/kochservice.schemas'
+import type { TagResponse } from '@/api/kochservice.schemas'
 
 export default function RecipeListItem(props: {
   title: string
@@ -15,7 +14,7 @@ export default function RecipeListItem(props: {
           'w-full h-24 flex flex-row justify-between items-center gap-x-4 rounded-2xl border-2 pr-4'
         }
       >
-        <Image
+        <img
           src={props.imageURL}
           alt={props.title}
           className={'h-full w-36 rounded-bl-2xl rounded-tl-2xl'}

@@ -6,7 +6,11 @@
     "dev": "vite --port 3000",
     "build": "vite build && tsc",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "orval": "orval",
+    "prettier": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "prettier:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
+
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",

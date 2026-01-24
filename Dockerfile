@@ -1,45 +1,18 @@
-FROM node:20-alpine AS base
-
-# Dependencies
-FROM base AS deps
+FROM node:20-alpine AS builder
 RUN corepack enable
 WORKDIR /app
+
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# Builder
-FROM base AS builder
-RUN corepack enable
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build args für NEXT_PUBLIC_ variablen (optional, wenn zur Build-Zeit nötig)
-ARG NEXT_PUBLIC_API_BASE
-ARG NEXT_PUBLIC_DOMAIN
-
-ENV NEXT_TELEMETRY_DISABLED=1
+ARG VITE_API_BASE
 RUN pnpm build
 
-# Runner
-FROM base AS runner
-WORKDIR /app
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
-
-EXPOSE 3000
-
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-
-CMD ["node", "server.js"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

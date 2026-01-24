@@ -1,3 +1,18 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      variables:
+        DEPLOY_ENV: prod
+        CONTAINER_NAME: frontend
+        HOST_PORT: "3000"
+        DEPLOY_URL: https://kochservice.golemt.org
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      variables:
+        DEPLOY_ENV: dev
+        CONTAINER_NAME: frontend_dev
+        HOST_PORT: "3100"
+        DEPLOY_URL: https://dev-kochservice.golemt.org
+
 stages:
   - quality
   - build
@@ -30,11 +45,9 @@ build:
     - pnpm build
   artifacts:
     paths:
-      - .next/
-      - public/
+      - dist/
       - package.json
       - pnpm-lock.yaml
-      - next.config.ts
     expire_in: 1 hour
 
 unit_test:
@@ -70,47 +83,24 @@ docker_build:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker build --build-arg VITE_API_BASE=$VITE_API_BASE -t $IMAGE_TAG -t $IMAGE_LATEST .
     - docker push $IMAGE_TAG
     - docker push $IMAGE_LATEST
   dependencies:
     - build
-  only:
-    - main
-    - dev
-
-deploy_dev:
-  stage: deploy_dev
-  tags:
-    - deployment
-  variables:
-    IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $IMAGE
-    - docker stop frontend_dev || true
-    - docker rm frontend_dev || true
-    - docker run -d --name frontend_dev -p 3100:3000 -e NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE_DEV -e NEXT_PUBLIC_DOMAIN=$NEXT_PUBLIC_DOMAIN_DEV --network kochservice-network --restart unless-stopped $IMAGE
-  only:
-    - dev
   environment:
-    name: dev
-    url: https://dev-kochservice.golemt.org
+    name: $DEPLOY_ENV
 
 deploy:
   stage: deploy
   tags:
     - deployment
-  variables:
-    IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $IMAGE
-    - docker stop frontend || true
-    - docker rm frontend || true
-    - docker run -d --name frontend -p 3000:3000 -e NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE_PROD -e NEXT_PUBLIC_DOMAIN=$NEXT_PUBLIC_DOMAIN_PROD --network kochservice-network --restart unless-stopped $IMAGE
-  only:
-    - main
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME || true
+    - docker rm $CONTAINER_NAME || true
+    - docker run -d --name $CONTAINER_NAME -p $HOST_PORT:80 --network kochservice-network --restart unless-stopped $IMAGE_TAG
   environment:
-    name: prod
-    url: https://kochservice.golemt.org
+    name: $DEPLOY_ENV
+    url: $DEPLOY_URL

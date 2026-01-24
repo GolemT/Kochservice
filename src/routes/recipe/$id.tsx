@@ -1,26 +1,18 @@
-import IngredientBar from '@/components/ingredient-sidebar'
-import Image from 'next/image'
+import { IngredientBar } from '@/components/ingredient-sidebar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Bookmark } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { RecipeResponse } from '@/api/kochservice.schemas'
-import { getRecipe } from "@/actions/recipes";
+import type { RecipeResponse } from '@/api/kochservice.schemas'
+import {createFileRoute} from "@tanstack/react-router";
+import RecipeViewSwitcher from "@/components/recipe-view-switcher.tsx";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-  const response = await getRecipe(id);
+export const Route = createFileRoute('/recipe/$id')({
+  component: RecipePage,
+})
 
-  if (!response.success) {
-    throw new Error(response.error || "Rezept konnte nicht geladen werden");
-  }
-
-  const recipe: RecipeResponse = response.data!
-  const ingredients = recipe.ingredients
+export async function RecipePage() {
+  const { id } = Route.useParams()
 
   return (
     <>
@@ -68,7 +60,7 @@ export default async function Page({
         >
           <div className="relative w-5/12 h-72 rounded-4xl border-muted border-2 shadow-2xs overflow-hidden">
             {/* Hintergrundbild */}
-            <Image
+            <img
               src={""}
               alt={recipe.name}
               className={'object-cover w-full h-full'}
@@ -109,5 +101,3 @@ export default async function Page({
     </>
   )
 }
-
-export const dynamic = 'force-dynamic'

@@ -1,11 +1,9 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
-import { RecipeIngredientResponse } from '@/api/kochservice.schemas'
+import type { RecipeIngredientResponse } from '@/api/kochservice.schemas'
 
-export default function IngredientBar({
+export function IngredientBar({
   ingredients,
 }: {
   ingredients: Array<RecipeIngredientResponse>

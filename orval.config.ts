@@ -6,7 +6,7 @@ export default defineConfig({
             target: 'http://localhost:8080/openapi',
         },
         output: {
-            target: './api/',
+            target: './src/api/',
             client: 'fetch',
             mode: 'tags-split',
             clean: true,
@@ -14,7 +14,7 @@ export default defineConfig({
             baseUrl: '',
             override: {
                 mutator: {
-                    path: './lib/api-client.ts',
+                    path: './src/lib/api-client.ts',
                     name: 'apiClient',
                 }
             }

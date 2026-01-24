@@ -1,6 +1,3 @@
-'use client'
-
-import * as React from 'react'
 import { Bookmark, ChevronUp, Home, Search, User2 } from 'lucide-react'
 import { Logo } from '@/components/logo'
 
@@ -23,7 +20,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
-import Link from 'next/link'
 import { ModeToggle } from '@/components/mode-toggle'
 
 // Menu items.
@@ -52,13 +48,13 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild={true}>
-              <Link
+              <a
                 href={'/'}
                 className={'flex flex-row justify-start align-middle'}
               >
                 <Logo />
                 <p className={'ml-2 text-lg font-semibold'}>Kochservice</p>
-              </Link>
+              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -100,13 +96,13 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem asChild>
-                  <Link href={'/account'}>Account</Link>
+                  <a href={'/account'}>Account</a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={'/settings'}>Settings</Link>
+                  <a href={'/settings'}>Settings</a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={'/'}>Sign Out</Link>
+                  <a href={'/'}>Sign Out</a>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
