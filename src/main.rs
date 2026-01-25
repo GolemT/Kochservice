@@ -89,6 +89,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             CorsLayer::new()
                 .allow_origin([
                     "http://localhost:3000".parse::<HeaderValue>().unwrap(),
+                    "http://localhost:3100".parse::<HeaderValue>().unwrap(),
                     "https://kochservice.golemt.org".parse::<HeaderValue>().unwrap(),
                     "https://dev-kochservice.golemt.org".parse::<HeaderValue>().unwrap(),
                 ])
