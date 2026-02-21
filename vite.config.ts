@@ -13,7 +13,7 @@ export default defineConfig({
     tanstackRouter({
       target: 'react',
       autoCodeSplitting: true,
-      routeFileIgnorePattern: '__tests__',
+      routeFileIgnorePattern: '(\\.test\\.|\\.spec\\.|__tests__|/use-)',
     }),
     visualizer({
       open: true,

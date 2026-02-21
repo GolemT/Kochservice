@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select.tsx'
 import { Plus, Trash2 } from 'lucide-react'
-import { useNew } from './-use-new'
+import { useNew } from './use-new'
 
 export const Route = createFileRoute('/recipe/new')({
   component: NewRecipePage,

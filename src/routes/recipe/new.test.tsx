@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import { NewRecipePage } from '../new'
+import { NewRecipePage } from './new'
 
 // Mock the entire hook so the component has no real dependencies
-vi.mock('../-use-new', () => ({
+vi.mock('./use-new', () => ({
   useNew: vi.fn(),
 }))
 
@@ -13,7 +13,7 @@ vi.mock('@tanstack/react-router', () => ({
   createFileRoute: () => () => ({}),
 }))
 
-import { useNew } from '../-use-new'
+import { useNew } from './use-new'
 
 function loadingState(override: Partial<ReturnType<typeof useNew>> = {}) {
   return {
