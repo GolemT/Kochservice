@@ -1,8 +1,8 @@
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
-import {CheckIcon, ChevronRightIcon, CircleIcon} from 'lucide-react'
+import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react'
 
-import {cn} from '@/lib/utils'
-import type {ComponentProps} from "react";
+import { cn } from '@/lib/utils'
+import type { ComponentProps } from 'react'
 
 function DropdownMenu({
   ...props
@@ -174,10 +174,7 @@ function DropdownMenuSeparator({
   )
 }
 
-function DropdownMenuShortcut({
-  className,
-  ...props
-}: ComponentProps<'span'>) {
+function DropdownMenuShortcut({ className, ...props }: ComponentProps<'span'>) {
   return (
     <span
       data-slot="dropdown-menu-shortcut"

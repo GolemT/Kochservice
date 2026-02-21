@@ -1,13 +1,12 @@
-import {createFileRoute} from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { IngredientBar } from '@/components/ingredient-sidebar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Bookmark } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import type { RecipeResponse } from '@/api/kochservice.schemas'
-import { useRecipe } from '@/hooks/use-Recipe.ts'
+import { useRecipe } from '@/hooks/use-recipe.ts'
 import { RecipeLoading } from '@/routes/recipe/-recipe-loading.tsx'
-
 
 export const Route = createFileRoute('/recipe/$id')({
   component: RecipePage,

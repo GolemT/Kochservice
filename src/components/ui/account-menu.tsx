@@ -1,7 +1,12 @@
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu'
-import {ChevronUp, User2} from 'lucide-react'
-import {SidebarMenuButton} from './sidebar'
-import {Link} from '@tanstack/react-router'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { ChevronUp, User2 } from 'lucide-react'
+import { SidebarMenuButton } from './sidebar'
+import { Link } from '@tanstack/react-router'
 
 export function AccountMenu() {
   const username = ''

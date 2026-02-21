@@ -1,8 +1,8 @@
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
 
-import {cn} from '@/lib/utils'
-import {buttonVariants} from '@/components/ui/button'
-import type {ComponentProps} from "react";
+import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/components/ui/button'
+import type { ComponentProps } from 'react'
 
 function AlertDialog({
   ...props
@@ -61,10 +61,7 @@ function AlertDialogContent({
   )
 }
 
-function AlertDialogHeader({
-  className,
-  ...props
-}: ComponentProps<'div'>) {
+function AlertDialogHeader({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="alert-dialog-header"
@@ -74,10 +71,7 @@ function AlertDialogHeader({
   )
 }
 
-function AlertDialogFooter({
-  className,
-  ...props
-}: ComponentProps<'div'>) {
+function AlertDialogFooter({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="alert-dialog-footer"

@@ -1,9 +1,15 @@
 import * as LabelPrimitive from '@radix-ui/react-label'
-import {Slot} from '@radix-ui/react-slot'
+import { Slot } from '@radix-ui/react-slot'
 
-import {cn} from '@/lib/utils'
-import {Label} from '@/components/ui/label'
-import {type ComponentProps, createContext, type ReactNode, useContext, useId} from "react";
+import { cn } from '@/lib/utils'
+import { Label } from '@/components/ui/label'
+import {
+  type ComponentProps,
+  createContext,
+  type ReactNode,
+  useContext,
+  useId,
+} from 'react'
 
 // Context for the current field
 type FormFieldContextValue = {
@@ -14,14 +20,14 @@ const FormFieldContext = createContext<FormFieldContextValue | null>(null)
 
 // FormField wrapper
 const FormField = ({
-                     fieldApi,
-                     children
-                   }: {
+  fieldApi,
+  children,
+}: {
   fieldApi: any
   children: ReactNode
 }) => {
   return (
-    <FormFieldContext.Provider value={{fieldApi}}>
+    <FormFieldContext.Provider value={{ fieldApi }}>
       {children}
     </FormFieldContext.Provider>
   )
@@ -74,9 +80,9 @@ function FormItem({ className, ...props }: ComponentProps<'div'>) {
 }
 
 function FormLabel({
-                     className,
-                     ...props
-                   }: ComponentProps<typeof LabelPrimitive.Root>) {
+  className,
+  ...props
+}: ComponentProps<typeof LabelPrimitive.Root>) {
   const { error, formItemId } = useFormField()
 
   return (

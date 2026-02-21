@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import SearchBar from '@/components/search'
-import { useInfiniteRecipes } from '@/hooks/use-Recipe.ts'
+import { useInfiniteRecipes } from '@/hooks/use-recipe.ts'
 import { HomeLoading } from '@/routes/-home-loading.tsx'
 import VirtualizedRecipeView from '@/components/virtualized-recipe-view.tsx'
 
