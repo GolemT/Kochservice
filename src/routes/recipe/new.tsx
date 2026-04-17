@@ -10,14 +10,9 @@ import {
 import { Input } from '@/components/ui/input.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Label } from '@/components/ui/label.tsx'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select.tsx'
 import { Plus, Trash2 } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea.tsx'
+import { Combobox } from '@/components/ui/combobox.tsx'
 import { useNew } from './use-new'
 
 export const Route = createFileRoute('/recipe/new')({
@@ -111,34 +106,39 @@ export function NewRecipePage() {
 
                   {field.state.value.map((_, i) => (
                     <div key={i} className="flex gap-2 items-end">
-                      <form.Field name={`ingredients[${i}].ingredient_id`}>
+                      <form.Field
+                        name={`ingredients[${i}].ingredient_id`}
+                        validators={{
+                          onChange: ({ value }) =>
+                            !value ? 'Select an ingredient' : undefined,
+                        }}
+                      >
                         {(subField) => (
-                          <div className="flex-1 space-y-2">
+                          <div className="flex-1 space-y-1">
                             <Label>Ingredient</Label>
-                            <Select
+                            <Combobox
+                              options={ingredients.map((ing) => ({ value: ing.id, label: ing.name }))}
                               value={subField.state.value}
-                              onValueChange={(value) =>
-                                subField.handleChange(value)
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select ingredient" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {ingredients.map((ing) => (
-                                  <SelectItem key={ing.id} value={ing.id}>
-                                    {ing.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              onValueChange={(value) => subField.handleChange(value)}
+                              placeholder="Select ingredient"
+                              searchPlaceholder="Search ingredients..."
+                            />
+                            {subField.state.meta.errors[0] && (
+                              <p className="text-sm text-red-500">{subField.state.meta.errors[0]}</p>
+                            )}
                           </div>
                         )}
                       </form.Field>
 
-                      <form.Field name={`ingredients[${i}].amount`}>
+                      <form.Field
+                        name={`ingredients[${i}].amount`}
+                        validators={{
+                          onChange: ({ value }) =>
+                            value <= 0 ? 'Must be greater than 0' : undefined,
+                        }}
+                      >
                         {(subField) => (
-                          <div className="w-24 space-y-2">
+                          <div className="w-24 space-y-1">
                             <Label>Amount</Label>
                             <Input
                               type="number"
@@ -148,13 +148,22 @@ export function NewRecipePage() {
                               }
                               placeholder="0"
                             />
+                            {subField.state.meta.errors[0] && (
+                              <p className="text-sm text-red-500">{subField.state.meta.errors[0]}</p>
+                            )}
                           </div>
                         )}
                       </form.Field>
 
-                      <form.Field name={`ingredients[${i}].measurement`}>
+                      <form.Field
+                        name={`ingredients[${i}].measurement`}
+                        validators={{
+                          onChange: ({ value }) =>
+                            !value.trim() ? 'Required' : undefined,
+                        }}
+                      >
                         {(subField) => (
-                          <div className="w-32 space-y-2">
+                          <div className="w-32 space-y-1">
                             <Label>Unit</Label>
                             <Input
                               value={subField.state.value}
@@ -163,6 +172,9 @@ export function NewRecipePage() {
                               }
                               placeholder="g, ml, etc"
                             />
+                            {subField.state.meta.errors[0] && (
+                              <p className="text-sm text-red-500">{subField.state.meta.errors[0]}</p>
+                            )}
                           </div>
                         )}
                       </form.Field>
@@ -202,15 +214,30 @@ export function NewRecipePage() {
                   {field.state.value.map((_, i) => (
                     <div key={i} className="flex gap-2 items-start">
                       <div className="flex-1">
-                        <form.Field name={`instructions[${i}]`}>
+                        <form.Field
+                          name={`instructions[${i}]`}
+                          validators={{
+                            onChange: ({ value }) => {
+                              if (!value.trim()) return 'Step cannot be empty'
+                              if (value.length > 500) return 'Step must be 500 characters or less'
+                              return undefined
+                            },
+                          }}
+                        >
                           {(subField) => (
-                            <Input
-                              value={subField.state.value}
-                              onChange={(e) =>
-                                subField.handleChange(e.target.value)
-                              }
-                              placeholder={`Step ${i + 1}`}
-                            />
+                            <div className="space-y-1">
+                              <Textarea
+                                value={subField.state.value}
+                                onChange={(e) => subField.handleChange(e.target.value)}
+                                onBlur={subField.handleBlur}
+                                placeholder={`Step ${i + 1}`}
+                                maxLength={500}
+                                showCount
+                              />
+                              {subField.state.meta.errors[0] && (
+                                <p className="text-sm text-red-500">{subField.state.meta.errors[0]}</p>
+                              )}
+                            </div>
                           )}
                         </form.Field>
                       </div>
