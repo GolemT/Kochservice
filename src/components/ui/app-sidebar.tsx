@@ -1,4 +1,4 @@
-import { Bookmark, ChevronUp, Home, Search, User2 } from 'lucide-react'
+import { Bookmark, ChevronUp, Home, Plus, Search, User2 } from 'lucide-react'
 import { Logo } from '@/components/logo'
 
 import {
@@ -39,6 +39,11 @@ const items = [
     title: 'Bookmarks',
     url: '/bookmarks',
     icon: Bookmark,
+  },
+  {
+    title: 'Create',
+    url: '/recipe/new',
+    icon: Plus,
   },
 ]
 
