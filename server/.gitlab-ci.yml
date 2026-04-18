@@ -1,10 +1,27 @@
+default:
+  tags:
+    - deployment
+
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
   IMAGE_LATEST: $CI_REGISTRY_IMAGE/backend:latest
 
+cache:
+  key:
+    files:
+      - server/Cargo.lock
+  paths:
+    - server/target/
+
+stages:
+  - quality
+  - build
+  - test
+  - docker
+  - deploy
+
 backend:code_quality:
   stage: quality
-  image: rust:latest
   before_script:
     - rustup component add rustfmt clippy
     - cd server
@@ -15,7 +32,6 @@ backend:code_quality:
 
 backend:build:
   stage: build
-  image: rust:latest
   before_script:
     - cd server
   script:
@@ -28,7 +44,6 @@ backend:build:
 
 backend:test:
   stage: test
-  image: rust:latest
   before_script:
     - cd server
   script:
@@ -36,9 +51,6 @@ backend:test:
 
 backend:docker_build:
   stage: docker
-  image: docker:latest
-  services:
-    - docker:dind
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
@@ -51,8 +63,6 @@ backend:docker_build:
 backend:deploy_dev:
   stage: deploy
   environment: development
-  tags:
-    - deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
@@ -65,8 +75,6 @@ backend:deploy_dev:
 backend:deploy:
   stage: deploy
   environment: production
-  tags:
-    - deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:

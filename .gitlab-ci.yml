@@ -14,20 +14,30 @@ workflow:
         DEPLOY_URL: https://dev-kochservice.golemt.org
 
 stages:
-  - quality
-  - build
-  - test
-  - docker
-  - deploy
+  - triggers
 
-include:
-  - local: 'client/.gitlab-ci.yml'
-    rules:
-      - changes:
-          - client/**/*
-          - .gitlab-ci.yml
-  - local: 'server/.gitlab-ci.yml'
-    rules:
-      - changes:
-          - server/**/*
-          - .gitlab-ci.yml
+frontend:pipeline:
+  stage: triggers
+  trigger:
+    include: client/.gitlab-ci.yml
+    strategy: depend
+  variables:
+    DEPLOY_ENV: $DEPLOY_ENV
+    CONTAINER_NAME: $CONTAINER_NAME
+    HOST_PORT: $HOST_PORT
+    DEPLOY_URL: $DEPLOY_URL
+    VITE_API_BASE: $VITE_API_BASE
+  rules:
+    - changes:
+        - client/**/*
+        - .gitlab-ci.yml
+
+backend:pipeline:
+  stage: triggers
+  trigger:
+    include: server/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+        - server/**/*
+        - .gitlab-ci.yml
