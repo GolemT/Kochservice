@@ -1,6 +1,6 @@
 variables:
-  IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
-  IMAGE_LATEST: $CI_REGISTRY_IMAGE/backend:latest
+  BACKEND_IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
+  BACKEND_IMAGE_LATEST: $CI_REGISTRY_IMAGE/backend:latest
 
 cache:
   key:
@@ -43,9 +43,9 @@ backend:docker_build:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build -t $IMAGE_TAG -t $IMAGE_LATEST -f server/Dockerfile server/
-    - docker push $IMAGE_TAG
-    - docker push $IMAGE_LATEST
+    - docker build -t $BACKEND_IMAGE_TAG -t $BACKEND_IMAGE_LATEST -f server/Dockerfile server/
+    - docker push $BACKEND_IMAGE_TAG
+    - docker push $BACKEND_IMAGE_LATEST
   dependencies:
     - backend:build
 
@@ -55,7 +55,7 @@ backend:deploy:
     name: $DEPLOY_ENV/server
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $IMAGE_TAG
+    - docker pull $BACKEND_IMAGE_TAG
     - docker stop $BACKEND_CONTAINER || true
     - docker rm $BACKEND_CONTAINER || true
-    - docker run -d --name $BACKEND_CONTAINER -p $BACKEND_PORT:8080 -e DATABASE_URL=$DATABASE_URL -e SENTRY_DSN=$SENTRY_DSN -e SENTRY_DSN_CLIENT=$SENTRY_DSN_CLIENT -e RUST_LOG=$RUST_LOG -e DEPLOY_ENV=$DEPLOY_ENV --network kochservice-network --restart unless-stopped $IMAGE_TAG
+    - docker run -d --name $BACKEND_CONTAINER -p $BACKEND_PORT:8080 -e DATABASE_URL=$DATABASE_URL -e SENTRY_DSN=$SENTRY_DSN -e SENTRY_DSN_CLIENT=$SENTRY_DSN_CLIENT -e RUST_LOG=$RUST_LOG -e DEPLOY_ENV=$DEPLOY_ENV --network kochservice-network --restart unless-stopped $BACKEND_IMAGE_TAG
