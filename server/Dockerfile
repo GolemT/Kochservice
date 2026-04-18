@@ -1,13 +1,9 @@
-FROM debian:bookworm-slim
+FROM alpine:3.20
 WORKDIR /app
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache ca-certificates
 
-# Copy pre-built binary from CI artifacts
-COPY target/release/kochservice /app/kochservice
+COPY target/x86_64-unknown-linux-musl/release/kochservice /app/kochservice
 
 RUN chmod +x /app/kochservice
 

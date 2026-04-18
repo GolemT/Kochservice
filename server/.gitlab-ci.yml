@@ -7,7 +7,7 @@ cache:
     files:
       - server/Cargo.lock
   paths:
-    - server/target/
+    - server/target/x86_64-unknown-linux-musl/
 
 backend:code_quality:
   stage: quality
@@ -22,12 +22,14 @@ backend:code_quality:
 backend:build:
   stage: build
   before_script:
+    - rustup target add x86_64-unknown-linux-musl
+    - apt-get install -y musl-tools
     - cd server
   script:
-    - cargo build --release
+    - cargo build --release --target x86_64-unknown-linux-musl
   artifacts:
     paths:
-      - server/target/release/kochservice
+      - server/target/x86_64-unknown-linux-musl/release/kochservice
       - server/Cargo.lock
     expire_in: 1 hour
 
