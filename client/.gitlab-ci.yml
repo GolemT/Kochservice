@@ -1,81 +1,46 @@
-workflow:
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      variables:
-        DEPLOY_ENV: prod
-        CONTAINER_NAME: frontend
-        HOST_PORT: "3000"
-        DEPLOY_URL: https://kochservice.golemt.org
-    - if: '$CI_COMMIT_BRANCH == "dev"'
-      variables:
-        DEPLOY_ENV: dev
-        CONTAINER_NAME: frontend_dev
-        HOST_PORT: "3100"
-        DEPLOY_URL: https://dev-kochservice.golemt.org
-
-stages:
-  - quality
-  - build
-  - test
-  - docker
-  - deploy_dev
-  - deploy
-
 variables:
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+  IMAGE_TAG: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST: $CI_REGISTRY_IMAGE/frontend:latest
 
 cache:
-  key: $CI_COMMIT_REF_SLUG
+  key: $CI_COMMIT_REF_SLUG-frontend
   paths:
-    - node_modules/
-    - .pnpm-store/
+    - client/node_modules/
+    - client/.pnpm-store/
 
-code_quality:
+frontend:code_quality:
   stage: quality
+  before_script:
+    - cd client
   script:
     - pnpm install
     - pnpm prettier --check .
   allow_failure: true
 
-build:
+frontend:build:
   stage: build
+  before_script:
+    - cd client
   script:
     - pnpm install
     - pnpm build
   artifacts:
     paths:
-      - dist/
-      - package.json
-      - pnpm-lock.yaml
+      - client/dist/
     expire_in: 1 hour
 
-unit_test:
+frontend:unit_test:
   stage: test
+  before_script:
+    - cd client
   script:
     - pnpm install
-    - pnpm test:unit  # vitest
+    - pnpm test:unit
   dependencies:
-    - build
+    - frontend:build
   allow_failure: true
 
-# e2e_test:
-#   image: mcr.microsoft.com/playwright:v1.51.1-noble
-#   stage: test
-#   script:
-#     - npm install -g pnpm
-#     - pnpm exec playwright install chrome
-#     - pnpm exec playwright test
-#   dependencies:
-#     - build
-#   artifacts:
-#     when: on_failure
-#     paths:
-#       - playwright-report/
-#     expire_in: 7 days
-#   allow_failure: true
-
-docker_build:
+frontend:docker_build:
   stage: docker
   image: docker:latest
   services:
@@ -83,15 +48,15 @@ docker_build:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build --build-arg VITE_API_BASE=$VITE_API_BASE -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker build --build-arg VITE_API_BASE=$VITE_API_BASE -t $IMAGE_TAG -t $IMAGE_LATEST -f client/Dockerfile client/
     - docker push $IMAGE_TAG
     - docker push $IMAGE_LATEST
   dependencies:
-    - build
+    - frontend:build
   environment:
     name: $DEPLOY_ENV
 
-deploy:
+frontend:deploy:
   stage: deploy
   tags:
     - deployment

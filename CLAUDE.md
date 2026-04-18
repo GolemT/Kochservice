@@ -365,30 +365,77 @@ The current stack (Radix UI primitives + Tailwind 4 + shadcn-style components) g
 
 ### 12. Monorepo consolidation
 
-> Status: **in progress** — new repo being created
+> Status: **complete**
 
-Currently the frontend and Rust backend live in separate repositories. As the project grows (main backend, image processing service, shared types), switching between repos becomes friction — especially when working with an AI assistant that needs full project context to make good decisions.
+The frontend and Rust backend now live in a single monorepo. Both were imported via `git subtree` to preserve their full histories.
 
-**Proposed structure:**
+**Current structure:**
 ```
-kochservice/
-├── frontend/          # this repo
-├── backend/           # main Rust backend
-├── image-service/     # image processing microservice
-└── infra/             # docker-compose, nginx config, deployment
+monorepo/
+├── client/    # React + Vite frontend (was: standalone repo)
+└── server/    # Rust backend / kochservice (was: standalone repo)
 ```
 
-**Benefits:**
-- Single context for the entire project — no switching between repos mid-task
-- Shared CI/CD pipeline
-- Easier to keep API contracts (Orval's OpenAPI spec) in sync — spec lives in `backend/`, Orval config in `frontend/` points to it directly
-- Infrastructure config lives next to the code it serves
+**Root CI/CD:** A root `.gitlab-ci.yml` uses `include:` to pull in `client/.gitlab-ci.yml` and `server/.gitlab-ci.yml`, with path-based `changes:` rules so client commits don't trigger backend builds and vice versa.
 
-**Trigger for consolidation:** Moved up from the original plan (was gated on image service). Doing it now for reduced friction and better AI context across the full stack.
+**Orval config:** Still points at the local OpenAPI spec served by the backend at runtime. Future improvement: point directly at `../server/` once the spec is exported as a static file.
 
-**Planned approach:**
-- New root repo with `frontend/` and `backend/` as subdirectories (import via git subtree or submodules — TBD)
-- Root `.gitlab-ci.yml` using `include:` to pull in per-service pipelines, with path-based `changes:` rules so frontend commits don't trigger backend builds and vice versa
-- Install GitLab MCP once the new repo is set up, for pipeline/MR/issue visibility from within Claude Code
-- Orval config update: point OpenAPI spec path at `../backend/` once colocated
+---
+
+## Backend (server/)
+
+### Stack
+
+| Concern | Technology |
+|---|---|
+| Web framework | Axum 0.8 |
+| Async runtime | Tokio |
+| ORM | SeaORM 2.0 (rc) |
+| Database | PostgreSQL |
+| API docs | utoipa + Scalar |
+| Migrations | sea-orm-cli / SeaORM Migrator |
+
+Server runs on **port 8080**. API docs available at `http://localhost:8080/scalar`.
+
+CORS is configured to allow: `localhost:3000`, `localhost:3100`, `kochservice.golemt.org`, `dev-kochservice.golemt.org`.
+
+### Architecture
+
+```
+server/src/
+├── api/              # HTTP layer — handlers, DTOs, OpenAPI spec registration
+│   ├── heartbeat/    # GET /health
+│   ├── recipe/       # recipe_handler.rs + recipe_dto.rs
+│   ├── ingredient/   # ingredient_handler.rs + ingredient_dto.rs
+│   ├── tag/          # tag_handler.rs + tag_dto.rs
+│   └── openapi_spec/ # GET /openapi (raw spec JSON)
+├── application/      # Business logic / services
+│   ├── recipe/       # recipe_service.rs
+│   ├── ingredient/   # ingredient_service.rs
+│   └── tag/          # tag_service.rs
+├── domain/           # Domain models + SeaORM entities
+│   ├── entities/     # SeaORM-generated (do not edit manually)
+│   ├── recipe/       # Recipe, RecipeId
+│   ├── ingredient/   # Ingredient, IngredientId
+│   ├── tag/          # Tag, TagId
+│   └── recipe_ingredient/
+└── infrastructure/   # AppState, error types, OpenAPI config, DB seeder
+```
+
+**Request flow:** `api handler` → `application service` → SeaORM (via `AppState.db`)
+
+### Key behaviours
+
+- **Migrations run on startup** — `Migrator::up(&db, None)` runs before the server accepts requests. No manual migration step needed in dev.
+- **Seeder** — `should_seed()` / `seed_all()` runs after migrations if the database is empty. Seeds recipe/ingredient/tag test data automatically.
+- **AppState** — shared via Axum's `.with_state()`. Currently holds only the SeaORM `DatabaseConnection`.
+- **IDs are UUIDs v7** — time-ordered, used for all entity primary keys.
+
+### Dev setup
+
+See `server/README.md`. Requires Docker (for PostgreSQL) and `sea-orm-cli`. Set `DATABASE_URL` in a `.env` file in `server/`.
+
+### Known issues / tech debt
+
+- `server/README.md` documents a `handlers/`, `services/`, `repositories/` structure that no longer matches the actual code — the real layout is `api/`, `application/`, `domain/`, `infrastructure/`. README needs updating.
 

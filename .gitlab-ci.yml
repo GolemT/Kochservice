@@ -1,0 +1,33 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      variables:
+        DEPLOY_ENV: prod
+        CONTAINER_NAME: frontend
+        HOST_PORT: "3000"
+        DEPLOY_URL: https://kochservice.golemt.org
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      variables:
+        DEPLOY_ENV: dev
+        CONTAINER_NAME: frontend_dev
+        HOST_PORT: "3100"
+        DEPLOY_URL: https://dev-kochservice.golemt.org
+
+stages:
+  - quality
+  - build
+  - test
+  - docker
+  - deploy
+
+include:
+  - local: 'client/.gitlab-ci.yml'
+    rules:
+      - changes:
+          - client/**/*
+          - .gitlab-ci.yml
+  - local: 'server/.gitlab-ci.yml'
+    rules:
+      - changes:
+          - server/**/*
+          - .gitlab-ci.yml

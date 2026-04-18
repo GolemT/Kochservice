@@ -1,43 +1,40 @@
-stages:
-  - check
-  - docker
-  - deploy
-
 variables:
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+  IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST: $CI_REGISTRY_IMAGE/backend:latest
 
-default:
+backend:code_quality:
+  stage: quality
   image: rust:latest
-
-code_quality:
-  stage: check
   before_script:
     - rustup component add rustfmt clippy
+    - cd server
   script:
-    - echo "Checking code quality..."
     - cargo fmt -- --check
     - cargo clippy -- -D warnings
   allow_failure: true
 
-build:
-  stage: check
+backend:build:
+  stage: build
+  image: rust:latest
+  before_script:
+    - cd server
   script:
-    - echo "Building the application..."
     - cargo build --release
   artifacts:
     paths:
-      - target/release/kochservice
-      - Cargo.lock
+      - server/target/release/kochservice
+      - server/Cargo.lock
     expire_in: 1 hour
 
-test:
-  stage: check
+backend:test:
+  stage: test
+  image: rust:latest
+  before_script:
+    - cd server
   script:
-    - echo "Running unit tests..."
     - cargo test --release
 
-docker_build:
+backend:docker_build:
   stage: docker
   image: docker:latest
   services:
@@ -45,46 +42,36 @@ docker_build:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - echo "Building Docker image..."
-    - docker build -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker build -t $IMAGE_TAG -t $IMAGE_LATEST -f server/Dockerfile server/
     - docker push $IMAGE_TAG
     - docker push $IMAGE_LATEST
   dependencies:
-    - build
-  only:
-    - main
-    - dev
+    - backend:build
 
-deploy_dev:
+backend:deploy_dev:
   stage: deploy
   environment: development
   tags:
     - deployment
-  variables:
-    IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
-    - echo "Deploying to DEV environment..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $IMAGE
+    - docker pull $IMAGE_TAG
     - docker stop backend_dev || true
     - docker rm backend_dev || true
-    - docker run -d --name backend_dev -p 8180:8080 -e DATABASE_URL=$DATABASE_URL_DEV --network kochservice-network --restart unless-stopped $IMAGE
-  only:
-    - dev
+    - docker run -d --name backend_dev -p 8180:8080 -e DATABASE_URL=$DATABASE_URL_DEV --network kochservice-network --restart unless-stopped $IMAGE_TAG
 
-deploy:
+backend:deploy:
   stage: deploy
   environment: production
   tags:
     - deployment
-  variables:
-    IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
-    - echo "Deploying to PROD environment..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $IMAGE
+    - docker pull $IMAGE_TAG
     - docker stop backend || true
     - docker rm backend || true
-    - docker run -d --name backend -p 8080:8080 -e DATABASE_URL=$DATABASE_URL_PROD --network kochservice-network --restart unless-stopped $IMAGE
-  only:
-    - main
+    - docker run -d --name backend -p 8080:8080 -e DATABASE_URL=$DATABASE_URL_PROD --network kochservice-network --restart unless-stopped $IMAGE_TAG
