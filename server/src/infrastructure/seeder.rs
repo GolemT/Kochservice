@@ -29,21 +29,129 @@ const INGREDIENTS: &[&str] = &[
 ];
 
 pub async fn should_seed(db: &DatabaseConnection) -> Result<bool, Box<dyn std::error::Error>> {
+<<<<<<< HEAD
     let count = recipe::Entity::find().count(db).await?;
     Ok(count == 0)
+=======
+    let recipe_count = recipe::Entity::find().count(db).await?;
+    let tag_count = tag::Entity::find().count(db).await?;
+    let ingredient_count = ingredient::Entity::find().count(db).await?;
+
+    Ok(recipe_count == 0 || tag_count == 0 || ingredient_count == 0)
+>>>>>>> 413fb406faa8c6f180613fd52952730b0a76aec0
 }
 
 pub async fn seed_all(db: &DatabaseConnection) -> Result<(), AppError> {
     println!("Seeding database...");
 
+<<<<<<< HEAD
     let tag_ids = seed_tags(db).await?;
     let ingredient_ids = seed_ingredients(db).await?;
     seed_recipes(db, &tag_ids, &ingredient_ids).await?;
+=======
+    // Seed tags (will add missing ones or fetch existing)
+    let tag_ids = seed_or_fetch_tags(db).await?;
+
+    // Seed ingredients (will add missing ones or fetch existing)
+    let ingredient_ids = seed_or_fetch_ingredients(db).await?;
+
+    // Check and seed recipes if needed
+    let recipe_count = recipe::Entity::find().count(db).await?;
+    if recipe_count == 0 {
+        seed_recipes(db, &tag_ids, &ingredient_ids).await?;
+    } else {
+        println!("  ⊘ Recipes already exist, skipping");
+    }
+>>>>>>> 413fb406faa8c6f180613fd52952730b0a76aec0
 
     println!("✓ Seeding completed!");
     Ok(())
 }
 
+<<<<<<< HEAD
+=======
+async fn seed_or_fetch_tags(db: &DatabaseConnection) -> Result<Vec<Uuid>, AppError> {
+    use std::collections::HashMap;
+
+    let existing_tags = tag::Entity::find().all(db).await?;
+    let tag_map: HashMap<String, Uuid> = existing_tags.iter()
+        .map(|t| (t.name.clone(), t.id))
+        .collect();
+
+    let mut tag_ids = Vec::new();
+    let mut seeded_count = 0;
+
+    for (name, uuid_str) in TAGS {
+        if let Some(&existing_id) = tag_map.get(*name) {
+            // Tag already exists, use existing ID
+            tag_ids.push(existing_id);
+        } else {
+            // Tag doesn't exist, create it
+            let id = match uuid_str {
+                Some(s) => Uuid::parse_str(s).unwrap(),
+                None => Uuid::now_v7()
+            };
+
+            let tag = tag::ActiveModel {
+                id: Set(id),
+                name: Set(name.to_string()),
+            };
+
+            tag.insert(db).await?;
+            tag_ids.push(id);
+            seeded_count += 1;
+        }
+    }
+
+    if seeded_count > 0 {
+        println!("  ✓ {} Tags (seeded {} new)", tag_ids.len(), seeded_count);
+    } else {
+        println!("  ⊘ {} Tags (all existed)", tag_ids.len());
+    }
+
+    Ok(tag_ids)
+}
+
+async fn seed_or_fetch_ingredients(db: &DatabaseConnection) -> Result<Vec<Uuid>, AppError> {
+    use std::collections::HashMap;
+
+    let existing_ingredients = ingredient::Entity::find().all(db).await?;
+    let ingredient_map: HashMap<String, Uuid> = existing_ingredients.iter()
+        .map(|i| (i.name.clone(), i.id))
+        .collect();
+
+    let mut ingredient_ids = Vec::new();
+    let mut seeded_count = 0;
+
+    for name in INGREDIENTS {
+        if let Some(&existing_id) = ingredient_map.get(*name) {
+            // Ingredient already exists, use existing ID
+            ingredient_ids.push(existing_id);
+        } else {
+            // Ingredient doesn't exist, create it
+            let id = Uuid::now_v7();
+
+            let ingredient = ingredient::ActiveModel {
+                id: Set(id),
+                name: Set(name.to_string()),
+            };
+
+            ingredient.insert(db).await?;
+            ingredient_ids.push(id);
+            seeded_count += 1;
+        }
+    }
+
+    if seeded_count > 0 {
+        println!("  ✓ {} Ingredients (seeded {} new)", ingredient_ids.len(), seeded_count);
+    } else {
+        println!("  ⊘ {} Ingredients (all existed)", ingredient_ids.len());
+    }
+
+    Ok(ingredient_ids)
+}
+
+>>>>>>> 413fb406faa8c6f180613fd52952730b0a76aec0
 async fn seed_tags(db: &DatabaseConnection) -> Result<Vec<Uuid>, AppError> {
     let mut tag_ids = Vec::new();
 
