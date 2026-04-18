@@ -23,6 +23,6 @@ thiserror = "2.0.17"
 tower-http = { version = "0.6", features = ["cors"] }
 tracing = "0.1.44"
 tracing-subscriber = "0.3.23"
-sentry = "0.47.0"
+sentry = { version = "0.47.0", default-features = false, features = ["backtrace", "contexts", "panic", "reqwest", "rustls"] }
 sentry-tracing = "0.47.0"
 reqwest = { version = "0.13.2", default-features = false, features = ["rustls", "json"] }
