@@ -44,11 +44,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             // Capture user IPs and potentially sensitive headers when using HTTP server integrations
             // see https://docs.sentry.io/platforms/rust/data-management/data-collected for more info
             send_default_pii: false,
-            environment: Some(
-                std::env::var("DEPLOY_ENV")
-                    .unwrap_or_else(|_| "development".into())
-                    .into(),
-            ),
+            environment: Some(deploy_env.into()),
             ..Default::default()
         },
     ));
