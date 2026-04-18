@@ -6,7 +6,7 @@ use std::str::FromStr;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Deserialize, ToSchema)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateRecipeRequest {
     pub name: String,
     pub instructions: Vec<String>,
@@ -14,7 +14,7 @@ pub struct CreateRecipeRequest {
     pub tag_ids: Vec<Uuid>,
 }
 
-#[derive(Deserialize, ToSchema)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateRecipeRequest {
     pub name: String,
     pub instructions: Vec<String>,
@@ -22,7 +22,7 @@ pub struct UpdateRecipeRequest {
     pub tag_ids: Vec<Uuid>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct GetAllRecipesRequest {
     pub page: u64,
     pub page_size: u64,
@@ -124,7 +124,7 @@ impl From<Recipe> for RecipeResponse {
 }
 
 // DTO für Ingredient-Daten im Request
-#[derive(Deserialize, Serialize, ToSchema, Clone)]
+#[derive(Debug, Deserialize, Serialize, ToSchema, Clone)]
 pub struct RecipeIngredientDto {
     pub ingredient_id: Uuid,
     pub amount: f32,

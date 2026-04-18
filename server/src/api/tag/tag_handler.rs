@@ -20,6 +20,7 @@ use uuid::Uuid;
     (status = 201, description = "Create Tag", body= TagResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn create_tag(
     State(app_state): State<AppState>,
     Json(req): Json<CreateTagRequest>,
@@ -39,6 +40,7 @@ pub async fn create_tag(
     (status = 200, description = "Success", body= TagsResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn get_tags(State(app_state): State<AppState>) -> Result<Json<TagsResponse>, AppError> {
     let result = tag_service::get_all(&app_state.db).await?;
 
@@ -53,6 +55,7 @@ pub async fn get_tags(State(app_state): State<AppState>) -> Result<Json<TagsResp
     (status = 200, description = "Found Tag", body= TagResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn get_tag(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,
@@ -73,6 +76,7 @@ pub async fn get_tag(
     (status = 200, description = "Successfully updated tag", body= TagResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn update_tag(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,
@@ -93,6 +97,7 @@ pub async fn update_tag(
     (status = 200, description = "Deleted Successfully", body= TagResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn delete_tag(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,

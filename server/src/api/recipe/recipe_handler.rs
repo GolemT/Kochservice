@@ -23,6 +23,7 @@ use uuid::Uuid;
         (status = 201, description = "Create Recipe", body = RecipeResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn create_recipe(
     State(app_state): State<AppState>,
     Json(req): Json<CreateRecipeRequest>,
@@ -50,6 +51,7 @@ pub async fn create_recipe(
         (status = 200, description = "Success", body= RecipesResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn get_recipes(
     State(app_state): State<AppState>,
     Query(params): Query<GetAllRecipesRequest>,
@@ -72,6 +74,7 @@ pub async fn get_recipes(
     (status = 200, description = "Found Recipe", body= RecipeResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn get_recipe(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,
@@ -92,6 +95,7 @@ pub async fn get_recipe(
         (status = 200, description = "Successfully updated recipe", body = RecipeResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn update_recipe(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,
@@ -117,6 +121,7 @@ pub async fn update_recipe(
     (status = 200, description = "Deleted Successfully", body= RecipeResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn delete_recipe(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,

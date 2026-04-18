@@ -22,6 +22,7 @@ use uuid::Uuid;
     (status = 201, description = "Create Ingredient", body= IngredientResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn create_ingredient(
     State(app_state): State<AppState>,
     Json(req): Json<CreateIngredientRequest>,
@@ -41,6 +42,7 @@ pub async fn create_ingredient(
     (status = 200, description = "Success", body= IngredientsResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn get_ingredients(
     State(app_state): State<AppState>,
 ) -> Result<Json<IngredientsResponse>, AppError> {
@@ -57,6 +59,7 @@ pub async fn get_ingredients(
     (status = 200, description = "Found Ingredient", body= IngredientResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn get_ingredient(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,
@@ -77,6 +80,7 @@ pub async fn get_ingredient(
     (status = 200, description = "Successfully updated ingredient", body= IngredientResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn update_ingredient(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,
@@ -97,6 +101,7 @@ pub async fn update_ingredient(
     (status = 200, description = "Deleted Successfully", body= IngredientResponse),
     )
 )]
+#[tracing::instrument(skip(app_state))]
 pub async fn delete_ingredient(
     State(app_state): State<AppState>,
     Path(id): Path<Uuid>,

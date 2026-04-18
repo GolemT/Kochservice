@@ -44,6 +44,7 @@ declare module '@tanstack/react-router' {
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
+  tunnel: '/sentry-tunnel',
   environment: import.meta.env.VITE_DEPLOY_ENV ?? 'development',
   sendDefaultPii: false,
 })

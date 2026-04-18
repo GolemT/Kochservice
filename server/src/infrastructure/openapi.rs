@@ -20,12 +20,14 @@ use utoipa::OpenApi;
         crate::api::recipe::recipe_handler::get_recipe,
         crate::api::recipe::recipe_handler::update_recipe,
         crate::api::recipe::recipe_handler::delete_recipe,
+        crate::api::sentry_tunnel::sentry_tunnel_handler::sentry_tunnel,
     ),
     tags(
         (name = "Ingredients", description = "Ingredient management endpoints"),
         (name = "Tags", description = "Tag management endpoints"),
         (name = "Health", description = "Health check endpoints"),
         (name = "Recipes", description = "Recipes management endpoints"),
+        (name = "Sentry", description = "Sentry tunnel — proxies browser SDK envelopes to Sentry ingest"),
     ),
     components(
         schemas(

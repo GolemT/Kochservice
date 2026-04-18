@@ -58,4 +58,4 @@ backend:deploy:
     - docker pull $IMAGE_TAG
     - docker stop $BACKEND_CONTAINER || true
     - docker rm $BACKEND_CONTAINER || true
-    - docker run -d --name $BACKEND_CONTAINER -p $BACKEND_PORT:8080 -e DATABASE_URL=$DATABASE_URL --network kochservice-network --restart unless-stopped $IMAGE_TAG
+    - docker run -d --name $BACKEND_CONTAINER -p $BACKEND_PORT:8080 -e DATABASE_URL=$DATABASE_URL -e SENTRY_DSN=$SENTRY_DSN -e SENTRY_DSN_CLIENT=$SENTRY_DSN_CLIENT -e RUST_LOG=$RUST_LOG -e DEPLOY_ENV=$DEPLOY_ENV --network kochservice-network --restart unless-stopped $IMAGE_TAG
