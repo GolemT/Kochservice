@@ -1,18 +1,30 @@
+import { createFileRoute } from '@tanstack/react-router'
 import { IngredientBar } from '@/components/ingredient-sidebar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Bookmark } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import type { RecipeResponse } from '@/api/kochservice.schemas'
-import {createFileRoute} from "@tanstack/react-router";
-import RecipeViewSwitcher from "@/components/recipe-view-switcher.tsx";
+import { useRecipe } from '@/hooks/use-recipe.ts'
+import { RecipeLoading } from '@/routes/recipe/-recipe-loading.tsx'
 
 export const Route = createFileRoute('/recipe/$id')({
   component: RecipePage,
 })
 
-export async function RecipePage() {
+function RecipePage() {
   const { id } = Route.useParams()
+
+  const { data, isLoading, error } = useRecipe(id)
+
+  if (isLoading) return <RecipeLoading />
+
+  if (error) {
+    console.error(error)
+  }
+
+  const recipe: RecipeResponse = data?.data
+  const ingredients = recipe.ingredients
 
   return (
     <>
@@ -32,7 +44,7 @@ export async function RecipePage() {
           title={'ingredients'}
           className="space-y-4 flex flex-col justify-center items-center w-full"
         >
-          {ingredients.map((item, i) => (
+          {recipe.ingredients.map((item, i) => (
             <li key={i} className="flex justify-between  w-1/2 h-4">
               <span className={'text-left'}>{item.ingredient_name}: </span>
               <span className={'text-right'}>{item.amount}</span>
@@ -61,7 +73,7 @@ export async function RecipePage() {
           <div className="relative w-5/12 h-72 rounded-4xl border-muted border-2 shadow-2xs overflow-hidden">
             {/* Hintergrundbild */}
             <img
-              src={""}
+              src={''}
               alt={recipe.name}
               className={'object-cover w-full h-full'}
               width={300}

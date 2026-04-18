@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/search')({
-    component: SearchPage
+  component: SearchPage,
 })
 
-export function SearchPage() {
+function SearchPage() {
   return (
     <>
       <h1>Search</h1>

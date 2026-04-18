@@ -23,8 +23,10 @@ export function IngredientBar({
             {ingredients.map((item, i) => (
               <li key={i} className="flex justify-between w-full h-4">
                 <span className={'text-left'}>{item.ingredient_name}: </span>
-                <span className={'text-right'}>{item.amount}</span>
-                <span className={'text-right'}>{item.measurement}</span>
+                <div>
+                  <span className={'text-right'}>{item.amount}</span>
+                  <span className={'text-right'}>{item.measurement}</span>
+                </div>
               </li>
             ))}
           </ul>
@@ -32,7 +34,7 @@ export function IngredientBar({
       )}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute -left-14 top-1/2 text-primary bg-backgroundtransform -translate-y-1/2 hover:bg-accent"
+        className="absolute -left-14 top-1/2 text-primary bg-background transform -translate-y-1/2 hover:bg-accent"
       >
         {isOpen ? <ChevronRight /> : <ChevronLeft />}
       </Button>

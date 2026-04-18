@@ -1,10 +1,10 @@
-import {createFileRoute} from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/account')({
-    component: AccountPage
+  component: AccountPage,
 })
 
-export function AccountPage() {
+function AccountPage() {
   return (
     <>
       <h1>Account</h1>
