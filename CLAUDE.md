@@ -365,7 +365,7 @@ The current stack (Radix UI primitives + Tailwind 4 + shadcn-style components) g
 
 ### 12. Monorepo consolidation
 
-> Status: **future consideration** — evaluate after image processing service is created
+> Status: **in progress** — new repo being created
 
 Currently the frontend and Rust backend live in separate repositories. As the project grows (main backend, image processing service, shared types), switching between repos becomes friction — especially when working with an AI assistant that needs full project context to make good decisions.
 
@@ -384,12 +384,11 @@ kochservice/
 - Easier to keep API contracts (Orval's OpenAPI spec) in sync — spec lives in `backend/`, Orval config in `frontend/` points to it directly
 - Infrastructure config lives next to the code it serves
 
-**Trigger for consolidation:** When the image processing service is created, that's the natural moment — three separate repos becomes genuinely awkward.
+**Trigger for consolidation:** Moved up from the original plan (was gated on image service). Doing it now for reduced friction and better AI context across the full stack.
 
----
+**Planned approach:**
+- New root repo with `frontend/` and `backend/` as subdirectories (import via git subtree or submodules — TBD)
+- Root `.gitlab-ci.yml` using `include:` to pull in per-service pipelines, with path-based `changes:` rules so frontend commits don't trigger backend builds and vice versa
+- Install GitLab MCP once the new repo is set up, for pipeline/MR/issue visibility from within Claude Code
+- Orval config update: point OpenAPI spec path at `../backend/` once colocated
 
-### 13. Sidebar nav link — Create Recipe
-
-> Status: **ready to implement** (2 min task)
-
-The `/recipe/new` page exists but isn't reachable from the sidebar. Add a "New Recipe" link to `src/components/ui/app-sidebar.tsx`.
