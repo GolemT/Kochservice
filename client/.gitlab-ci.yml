@@ -1,0 +1,106 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      variables:
+        DEPLOY_ENV: prod
+        CONTAINER_NAME: frontend
+        HOST_PORT: "3000"
+        DEPLOY_URL: https://kochservice.golemt.org
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      variables:
+        DEPLOY_ENV: dev
+        CONTAINER_NAME: frontend_dev
+        HOST_PORT: "3100"
+        DEPLOY_URL: https://dev-kochservice.golemt.org
+
+stages:
+  - quality
+  - build
+  - test
+  - docker
+  - deploy_dev
+  - deploy
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - node_modules/
+    - .pnpm-store/
+
+code_quality:
+  stage: quality
+  script:
+    - pnpm install
+    - pnpm prettier --check .
+  allow_failure: true
+
+build:
+  stage: build
+  script:
+    - pnpm install
+    - pnpm build
+  artifacts:
+    paths:
+      - dist/
+      - package.json
+      - pnpm-lock.yaml
+    expire_in: 1 hour
+
+unit_test:
+  stage: test
+  script:
+    - pnpm install
+    - pnpm test:unit  # vitest
+  dependencies:
+    - build
+  allow_failure: true
+
+# e2e_test:
+#   image: mcr.microsoft.com/playwright:v1.51.1-noble
+#   stage: test
+#   script:
+#     - npm install -g pnpm
+#     - pnpm exec playwright install chrome
+#     - pnpm exec playwright test
+#   dependencies:
+#     - build
+#   artifacts:
+#     when: on_failure
+#     paths:
+#       - playwright-report/
+#     expire_in: 7 days
+#   allow_failure: true
+
+docker_build:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build --build-arg VITE_API_BASE=$VITE_API_BASE -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker push $IMAGE_TAG
+    - docker push $IMAGE_LATEST
+  dependencies:
+    - build
+  environment:
+    name: $DEPLOY_ENV
+
+deploy:
+  stage: deploy
+  tags:
+    - deployment
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_TAG
+    - docker stop $CONTAINER_NAME || true
+    - docker rm $CONTAINER_NAME || true
+    - docker run -d --name $CONTAINER_NAME -p $HOST_PORT:80 --network kochservice-network --restart unless-stopped $IMAGE_TAG
+  environment:
+    name: $DEPLOY_ENV
+    url: $DEPLOY_URL
