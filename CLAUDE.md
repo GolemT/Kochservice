@@ -341,7 +341,7 @@ The current stack (Radix UI primitives + Tailwind 4 + shadcn-style components) g
 
 ### 11. Observability (logging, tracing, metrics)
 
-> Status: **future consideration** — not planned yet, no timeline
+> Status: **partially in progress** — Sentry error tracking being implemented (§13). Full observability stack (Prometheus, Grafana, OpenTelemetry) is future work.
 
 **Scope:** Covers all services — main Rust backend, image processing service, and frontend.
 
@@ -352,14 +352,14 @@ The current stack (Radix UI primitives + Tailwind 4 + shadcn-style components) g
 
 **Frontend:**
 - The Axios interceptor layer (§1) is the natural place to attach trace IDs to outgoing requests and capture client-side error rates
-- Consider a lightweight error reporting integration (e.g. Sentry) for production — captures unhandled errors with stack traces without needing a full observability stack
+- Sentry JS SDK handles unhandled errors and promise rejections automatically once installed (§13)
 
-**Infrastructure:**
+**Infrastructure (future):**
 - Collector: OpenTelemetry Collector as a sidecar/agent
 - Visualisation: Grafana for metrics + traces (pairs with Prometheus and Tempo/Jaeger). Self-hosted, fits the no-cloud-provider constraint.
 - Log aggregation: Loki (also Grafana ecosystem, minimal overhead)
 
-**When to add:** After core features are stable and deployed. Observability on an unstable app just generates noise. Good milestone: add it when the first real user outside the developer starts using the app.
+**When to add full stack:** After core features are stable and deployed. Good milestone: add it when the first real user outside the developer starts using the app.
 
 ---
 
@@ -438,4 +438,168 @@ See `server/README.md`. Requires Docker (for PostgreSQL) and `sea-orm-cli`. Set 
 ### Known issues / tech debt
 
 - `server/README.md` documents a `handlers/`, `services/`, `repositories/` structure that no longer matches the actual code — the real layout is `api/`, `application/`, `domain/`, `infrastructure/`. README needs updating.
+
+---
+
+### 13. Error tracking (Sentry + GitLab integration)
+
+> Status: **in progress**
+> - Frontend SDK: **complete**
+> - Sentry tunnel (backend proxy): **next**
+> - Backend `tracing` + Sentry: **next**
+> - GitLab Monitor integration: **planned**
+
+**Using:** Sentry.io free tier (5k errors/month). Separate Sentry projects for frontend and backend for cleaner filtering and independent quotas.
+
+**Philosophy:** Sentry is the transport, not the instrumentation. The backend needs `tracing` to produce structured data; Sentry forwards `tracing::error!()` events automatically. The frontend needs error boundaries to catch render crashes; Sentry catches everything else (unhandled errors, promise rejections) via its global hooks.
+
+---
+
+#### Frontend — complete
+
+**SDK:** `@sentry/react` installed. Init in `src/main.tsx` before React renders.
+
+**Current config:**
+```ts
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  environment: import.meta.env.VITE_DEPLOY_ENV ?? 'development',
+  sendDefaultPii: false,
+})
+```
+
+**Pipeline variables (all set):**
+- `VITE_SENTRY_DSN` — GitLab CI/CD variable, scoped per environment (`dev/client`, `prod/client`)
+- `VITE_DEPLOY_ENV` — set in root `workflow:rules` (`development` for dev branch, `production` for main); passed as Docker build arg
+
+**What's captured automatically:** unhandled JS errors, unhandled promise rejections.
+
+**Still missing on frontend:**
+- `Sentry.ErrorBoundary` around the app root — render crashes currently show a blank page and are not reported
+- Axios interceptor hook-in (when Axios is implemented — §1)
+- `browserTracingIntegration()` for page load / navigation performance tracing (low priority)
+
+**Known gotcha — Sentry inbound filters:** Sentry's "Filter out events coming from localhost" is enabled by default and silently drops local dev events even when the network request returns 200 with a valid event ID. Disable it under **Sentry project → Settings → Inbound Filters** for local testing.
+
+**Tunnel (not yet implemented):** Ad blockers block direct requests to `ingest.de.sentry.io`. Until the tunnel is in place, disable your ad blocker for local dev. See tunnel section below.
+
+---
+
+#### Sentry tunnel — next
+
+The tunnel is a single endpoint on the Rust backend (`POST /sentry-tunnel`) that proxies frontend error envelopes to Sentry's ingest. The frontend sends to your own domain instead of directly to Sentry, bypassing ad blockers entirely.
+
+**Frontend change (`src/main.tsx`):**
+```ts
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  tunnel: '/sentry-tunnel',   // add this line
+  environment: import.meta.env.VITE_DEPLOY_ENV ?? 'development',
+  sendDefaultPii: false,
+})
+```
+
+**Backend endpoint (`api/sentry_tunnel/`):**
+
+The tunnel must validate that the envelope is destined for your own Sentry project (by checking the DSN host and project ID parsed from the envelope header) before forwarding, to prevent abuse as an open proxy.
+
+```rust
+// POST /sentry-tunnel
+// 1. Read raw request body (the Sentry envelope)
+// 2. Parse the first line of the envelope as JSON to extract the DSN
+// 3. Validate the DSN host matches your known Sentry ingest host
+// 4. Validate the project ID matches your known project ID
+// 5. Forward the raw body to https://<sentry-host>/api/<project-id>/envelope/
+//    with the same Content-Type header
+// 6. Return Sentry's response upstream
+```
+
+**Crates needed:**
+```toml
+reqwest = { version = "0.12", features = ["json"] }  # likely already present or needed anyway
+```
+
+**Security:** Without the DSN/project ID validation in step 3–4, the endpoint is an open HTTP proxy. Always validate before forwarding.
+
+**Environment variables:**
+- `SENTRY_TUNNEL_DSN` — the frontend DSN, used server-side to validate incoming envelopes. Scoped per environment in GitLab CI.
+
+---
+
+#### Backend `tracing` + Sentry — next
+
+**Crates to add to `server/Cargo.toml`:**
+```toml
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+sentry = { version = "0.34", features = ["tracing"] }
+sentry-tracing = "0.34"
+```
+
+**`tracing` setup — new file `server/src/infrastructure/tracing.rs`:**
+```rust
+pub fn init_tracing() {
+    let sentry_layer = sentry_tracing::layer();
+
+    tracing_subscriber::registry()
+        .with(EnvFilter::from_default_env())
+        .with(fmt::layer().json())
+        .with(sentry_layer)
+        .init();
+}
+```
+Use `.pretty()` instead of `.json()` for local dev readability — controlled via a `RUST_LOG_FORMAT=pretty` env var or a compile-time feature flag.
+
+**Sentry init in `server/src/main.rs`:**
+Sentry guard must be initialised before `tracing` and kept alive for the entire duration of `main` — dropping it early causes in-flight events to be lost on shutdown.
+
+```rust
+let _sentry_guard = sentry::init((
+    std::env::var("SENTRY_DSN").unwrap_or_default(),
+    sentry::ClientOptions {
+        release: sentry::release_name!(),
+        traces_sample_rate: 0.1,
+        environment: Some(std::env::var("DEPLOY_ENV")
+            .unwrap_or_else(|_| "development".into()).into()),
+        ..Default::default()
+    },
+));
+init_tracing();
+```
+
+Using `unwrap_or_default()` on the DSN means Sentry is simply disabled (no-op) when `SENTRY_DSN` is not set — useful for local dev without requiring the variable.
+
+**Usage conventions:**
+- `tracing::error!()` — forwarded to Sentry; use for unexpected failures
+- `tracing::warn!()` — logged but not sent to Sentry by default
+- `tracing::info!()` / `tracing::debug!()` — operational logs only, never sent to Sentry
+- `#[tracing::instrument]` on handlers and service methods — attaches span context to every Sentry event so you can see which endpoint triggered the error
+
+**Environment variables to add to the backend deploy job:**
+- `SENTRY_DSN` — scoped per environment (`dev/server`, `prod/server`) in GitLab CI
+- `RUST_LOG` — `warn` for prod, `debug` for dev (set in GitLab CI/CD variables)
+- `DEPLOY_ENV` — already in `workflow:rules`; add `-e DEPLOY_ENV=$DEPLOY_ENV` to the `docker run` command in `backend:deploy`
+
+---
+
+#### GitLab Monitor integration — planned
+
+Surfaces Sentry errors inside GitLab without leaving the dashboard.
+
+**Setup: GitLab project → Settings → Monitor → Error Tracking**
+1. Select "Sentry" as provider
+2. Enter Sentry API URL (`https://sentry.io/`) and a Sentry auth token (create under Sentry user settings → API tokens, with `project:read` scope)
+3. Select the Sentry project to link (do this twice — once for the frontend project, once for backend if using separate projects)
+
+**What this gives you:**
+- GitLab Monitor → Error Tracking shows live errors from Sentry
+- Each error links back to the commit that introduced it via the `release` field
+- Error status (resolved/ignored) manageable from GitLab
+
+**Source maps (frontend — do this before going live with real users):**
+Without source maps, Sentry stack traces point at minified bundle line numbers — useless for debugging. The Sentry Vite plugin uploads maps automatically at build time:
+```bash
+pnpm add -D @sentry/vite-plugin
+```
+Requires a `SENTRY_AUTH_TOKEN` CI variable and the org/project slugs in `vite.config.ts`. Source map files should be excluded from the nginx-served build (the plugin handles this).
 

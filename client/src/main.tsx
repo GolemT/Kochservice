@@ -4,6 +4,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import * as Sentry from '@sentry/react'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +41,12 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
 }
+
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  environment: import.meta.env.VITE_DEPLOY_ENV ?? 'development',
+  sendDefaultPii: false,
+})
 
 // Render the app
 const rootElement = document.getElementById('app')

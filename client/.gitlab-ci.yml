@@ -40,7 +40,7 @@ frontend:docker_build:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build --build-arg VITE_API_BASE=$VITE_API_BASE -t $IMAGE_TAG -t $IMAGE_LATEST -f client/Dockerfile client/
+    - docker build --build-arg VITE_API_BASE=$VITE_API_BASE --build-arg VITE_SENTRY_DSN=$VITE_SENTRY_DSN --build-arg VITE_DEPLOY_ENV=$VITE_DEPLOY_ENV -t $IMAGE_TAG -t $IMAGE_LATEST -f client/Dockerfile client/
     - docker push $IMAGE_TAG
     - docker push $IMAGE_LATEST
   dependencies:

@@ -8,6 +8,8 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 ARG VITE_API_BASE
+ARG VITE_SENTRY_DSN
+ARG VITE_DEPLOY_ENV
 RUN pnpm build
 
 FROM nginx:alpine

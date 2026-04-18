@@ -8,6 +8,7 @@ workflow:
         DEPLOY_URL: https://kochservice.golemt.org
         BACKEND_CONTAINER: backend
         BACKEND_PORT: "8080"
+        VITE_DEPLOY_ENV: production
     - if: '$CI_COMMIT_BRANCH == "dev"'
       variables:
         DEPLOY_ENV: dev
@@ -16,6 +17,7 @@ workflow:
         DEPLOY_URL: https://dev-kochservice.golemt.org
         BACKEND_CONTAINER: backend_dev
         BACKEND_PORT: "8180"
+        VITE_DEPLOY_ENV: development
 
 default:
   tags:
