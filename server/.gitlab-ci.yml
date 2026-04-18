@@ -1,7 +1,3 @@
-default:
-  tags:
-    - deployment
-
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
   IMAGE_LATEST: $CI_REGISTRY_IMAGE/backend:latest
@@ -12,13 +8,6 @@ cache:
       - server/Cargo.lock
   paths:
     - server/target/
-
-stages:
-  - quality
-  - build
-  - test
-  - docker
-  - deploy
 
 backend:code_quality:
   stage: quality
@@ -60,26 +49,13 @@ backend:docker_build:
   dependencies:
     - backend:build
 
-backend:deploy_dev:
-  stage: deploy
-  environment: development
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $IMAGE_TAG
-    - docker stop backend_dev || true
-    - docker rm backend_dev || true
-    - docker run -d --name backend_dev -p 8180:8080 -e DATABASE_URL=$DATABASE_URL_DEV --network kochservice-network --restart unless-stopped $IMAGE_TAG
-
 backend:deploy:
   stage: deploy
-  environment: production
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+  environment:
+    name: $DEPLOY_ENV/server
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_TAG
-    - docker stop backend || true
-    - docker rm backend || true
-    - docker run -d --name backend -p 8080:8080 -e DATABASE_URL=$DATABASE_URL_PROD --network kochservice-network --restart unless-stopped $IMAGE_TAG
+    - docker stop $BACKEND_CONTAINER || true
+    - docker rm $BACKEND_CONTAINER || true
+    - docker run -d --name $BACKEND_CONTAINER -p $BACKEND_PORT:8080 -e DATABASE_URL=$DATABASE_URL --network kochservice-network --restart unless-stopped $IMAGE_TAG

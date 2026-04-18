@@ -6,38 +6,36 @@ workflow:
         CONTAINER_NAME: frontend
         HOST_PORT: "3000"
         DEPLOY_URL: https://kochservice.golemt.org
+        BACKEND_CONTAINER: backend
+        BACKEND_PORT: "8080"
     - if: '$CI_COMMIT_BRANCH == "dev"'
       variables:
         DEPLOY_ENV: dev
         CONTAINER_NAME: frontend_dev
         HOST_PORT: "3100"
         DEPLOY_URL: https://dev-kochservice.golemt.org
+        BACKEND_CONTAINER: backend_dev
+        BACKEND_PORT: "8180"
+
+default:
+  tags:
+    - deployment
 
 stages:
-  - triggers
+  - quality
+  - build
+  - test
+  - docker
+  - deploy
 
-frontend:pipeline:
-  stage: triggers
-  trigger:
-    include: client/.gitlab-ci.yml
-    strategy: depend
-  variables:
-    DEPLOY_ENV: $DEPLOY_ENV
-    CONTAINER_NAME: $CONTAINER_NAME
-    HOST_PORT: $HOST_PORT
-    DEPLOY_URL: $DEPLOY_URL
-    VITE_API_BASE: $VITE_API_BASE
-  rules:
-    - changes:
-        - client/**/*
-        - .gitlab-ci.yml
-
-backend:pipeline:
-  stage: triggers
-  trigger:
-    include: server/.gitlab-ci.yml
-    strategy: depend
-  rules:
-    - changes:
-        - server/**/*
-        - .gitlab-ci.yml
+include:
+  - local: 'client/.gitlab-ci.yml'
+    rules:
+      - changes:
+          - client/**/*
+          - .gitlab-ci.yml
+  - local: 'server/.gitlab-ci.yml'
+    rules:
+      - changes:
+          - server/**/*
+          - .gitlab-ci.yml

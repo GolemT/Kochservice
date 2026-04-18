@@ -1,18 +1,7 @@
-default:
-  tags:
-    - deployment
-
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHORT_SHA
   IMAGE_LATEST: $CI_REGISTRY_IMAGE/frontend:latest
 
-
-stages:
-  - quality
-  - build
-  - test
-  - docker
-  - deploy
 
 frontend:code_quality:
   stage: quality
@@ -57,7 +46,7 @@ frontend:docker_build:
   dependencies:
     - frontend:build
   environment:
-    name: $DEPLOY_ENV
+    name: $DEPLOY_ENV/client
 
 frontend:deploy:
   stage: deploy
@@ -68,5 +57,5 @@ frontend:deploy:
     - docker rm $CONTAINER_NAME || true
     - docker run -d --name $CONTAINER_NAME -p $HOST_PORT:80 --network kochservice-network --restart unless-stopped $IMAGE_TAG
   environment:
-    name: $DEPLOY_ENV
+    name: $DEPLOY_ENV/client
     url: $DEPLOY_URL
