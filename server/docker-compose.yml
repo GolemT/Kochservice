@@ -1,0 +1,15 @@
+services:
+  db:
+    container_name: kochserviceDb
+    image: postgres:latest
+    ports:
+      - "5123:5432"
+    environment:
+      POSTGRES_DB: kochservice
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: test
+    volumes:
+      - kochserviceData:/var/lib/postgresql
+
+volumes:
+  kochserviceData:
