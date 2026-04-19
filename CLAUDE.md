@@ -15,11 +15,13 @@ Recipe management frontend. Intentionally built to enterprise-grade standards fo
 | Forms | TanStack Form v1 |
 | Client state | Zustand v5 |
 | Styling | Tailwind CSS 4 |
-| Components | Radix UI primitives |
+| Components | Radix UI primitives + shadcn-style (⚠️ under review — see §7) |
 | Notifications | Sonner |
 | Icons | Lucide React |
 | API codegen | Orval (OpenAPI → TypeScript) |
-| Testing | Vitest + Testing Library + Playwright (via MCP) |
+| HTTP client | Axios (via `src/lib/axios-client.ts`) |
+| Error tracking | Sentry (`@sentry/react` frontend, `sentry` crate backend) |
+| Testing | Vitest 4 + Testing Library + `@vitest/coverage-v8` |
 | Package manager | **pnpm** — always use pnpm, never npm |
 
 Backend: Rust ("Kochservice"), running on port 8080. Dev frontend runs on port 3000.
@@ -36,15 +38,17 @@ src/
 │   ├── recipes/
 │   ├── ingredients/
 │   ├── tags/
+│   ├── sentry/       # Generated Sentry tunnel client
 │   └── kochservice.schemas.ts
 ├── components/
 │   └── ui/           # Radix-based primitives (Button, Input, Card, Combobox, etc.)
 ├── hooks/            # Global TanStack Query hooks — all server state lives here
 │   ├── use-recipe.ts
 │   ├── use-ingredient.ts
-│   └── use-tag.ts
+│   ├── use-tag.ts
+│   └── use-mobile.ts # Shadcn mobile breakpoint hook
 ├── lib/
-│   ├── api-client.ts # Raw fetch wrapper — target for axios migration
+│   ├── axios-client.ts  # Axios instance — all API requests pass through here
 │   └── utils.ts
 ├── routes/           # TanStack Router file-based routing
 │   ├── __root.tsx
@@ -61,6 +65,8 @@ src/
 
 ```
 Orval-generated API fn  →  Global hook (src/hooks/)  →  Route/component
+                ↓
+        axios-client.ts  (interceptors: toasts, Sentry, future auth)
 ```
 
 All server state is managed through the global hooks in `src/hooks/`. Components never call API functions directly.
@@ -70,6 +76,7 @@ All server state is managed through the global hooks in `src/hooks/`. Components
 - **Cache-first recipe lookup** — `useRecipe` checks the infinite query cache before fetching individually
 - **Infinite scroll + virtualisation** — home list uses `useInfiniteQuery` with row virtualisation
 - **Preload on intent** — TanStack Router preloads routes on hover/focus
+- **Centralised HTTP boundary** — `axios-client.ts` holds all cross-cutting request/response logic; hooks and components are never touched when transport behaviour changes
 
 ---
 
@@ -77,9 +84,29 @@ All server state is managed through the global hooks in `src/hooks/`. Components
 
 - **`use-new.ts` route warning** — TanStack Router emits a warning because `src/routes/recipe/use-new.ts` doesn't export a `Route`. The `routeFileIgnorePattern` config should exclude it but doesn't seem to match. Either rename to `-use-new.ts` or fix the ignore pattern.
 - **Loading states are bare `<div>Loading...</div>`** — should be replaced with skeleton components (`src/components/ui/skeleton.tsx` exists).
-- **No error boundaries** — unhandled query/render errors will crash the whole page.
 - **Recipe images are non-functional** — the detail page renders `<img src="">` when no image is set, causing a React warning.
-- **`npm install` instead of pnpm** — once caused a broken install. Always use pnpm.
+- **Backend has no tests** — `cargo tarpaulin` is wired in CI and will report 0% until tests are added.
+- **`server/README.md` is stale** — documents a `handlers/`, `services/`, `repositories/` layout that no longer matches the real `api/`, `application/`, `domain/`, `infrastructure/` structure.
+
+---
+
+## Testing
+
+**Frontend:** Vitest 4 + Testing Library. 4 test files, 38 tests. Run with `pnpm vitest run`.
+
+Covered so far:
+- `src/lib/axios-client.ts` — interceptor behaviour (toasts, Sentry, re-throw)
+- `src/hooks/use-recipe.ts` — infinite query, cache-first lookup, create/update mutations
+- `src/routes/recipe/use-new.ts` — form defaults, loading states, submission, navigation
+- `src/routes/recipe/new.tsx` — smoke tests
+
+**CI coverage reporting:**
+- JUnit XML → GitLab Tests tab (38 tests visible per pipeline)
+- Cobertura XML → line-level coverage in MR diffs
+- Coverage % parsed from stdout (`Lines` metric) → visible in job sidebar
+- Pipeline-level % requires setting the regex in **GitLab → Settings → CI/CD → General pipelines → Test coverage parsing**: `Lines\s*:\s*([\d.]+)%`
+
+**Backend:** No tests yet. `cargo tarpaulin` is configured and will report 0% coverage — `allow_failure: true` is set so this doesn't block the pipeline.
 
 ---
 
@@ -87,45 +114,16 @@ All server state is managed through the global hooks in `src/hooks/`. Components
 
 ### 1. API client layer (Axios)
 
-> Status: **planned** — not started
+> Status: **complete**
 
-**Why:** The current `src/lib/api-client.ts` is a raw fetch wrapper that Orval's generated functions call directly. This means if we swap Orval, change codegen, or want to add cross-cutting behaviour (auth, error normalisation, logging, tracing, metrics), there's no single place to do it.
+`src/lib/axios-client.ts` — a configured Axios instance that all Orval-generated functions call via the `mutator` option in `orval.config.ts`.
 
-The goal is a **controlled HTTP boundary** — one place every request and response passes through. Axios is the implementation choice because it has first-class interceptor support. The generated Orval functions are an implementation detail; what matters is that they point at *our* client, not raw fetch.
-
-**Abstraction stack (current):**
-```
-Components → Hooks → Orval-generated fns → api-client.ts (fetch) → Network
-```
-
-**Abstraction stack (target):**
-```
-Components → Hooks → Orval-generated fns → axios-client.ts → Network
-                                                    ↑
-                              interceptors: auth, errors, logging, tracing, metrics
-```
-
-Hooks and components don't change — they're already insulated. Only the transport layer changes.
-
-**Planned approach:**
-- Create `src/lib/axios-client.ts`: configured Axios instance (baseURL from `VITE_API_BASE`, timeout, default headers)
-- Request interceptor: attach auth token (from AuthService, once built)
-- Response interceptor: normalise errors into a consistent `ApiError` shape before they reach TanStack Query
-- Update Orval config (`orval.config.ts`) to use a custom mutator pointing at the new Axios client instead of the fetch wrapper
-- Future interceptors: logging, distributed tracing headers, metrics collection
-
-**`ApiError` shape to define before implementing:**
-```ts
-interface ApiError {
-  message: string
-  status: number
-  code?: string       // backend-defined error code for specific handling
-}
-```
-
-**Open questions:**
-- Token storage strategy: depends on AuthService design (see below) — implement interceptor stub first, wire token later
-- Whether to keep `api-client.ts` as a thin re-export during transition or delete it immediately
+**What's in place:**
+- `baseURL` from `VITE_API_BASE` (falls back to `http://localhost:8080`), 10s timeout
+- Response interceptor: success toast for mutating methods (POST/PUT/PATCH/DELETE), suppressible per-request via `successMessage: false`, customisable via `successMessage: 'custom text'`
+- Response interceptor: error toast from `response.data.error` → `error.message` → fallback; Sentry capture on every error
+- Auth interceptor stub ready — cookie-based auth (BFF pattern, see §2) means the interceptor won't need to attach tokens, just exists as an extension point
+- `api-client.ts` (old fetch wrapper) has been deleted
 
 ---
 
@@ -237,7 +235,7 @@ Service emits status updates (`scanning`, `processing`, `saved`, `error`) back t
 
 **Language / implementation:** TBD — could be a second Rust service or a small Python service (Pillow has excellent WebP/compression support). Decision can wait until implementation time.
 
-**Infrastructure note:** This service will also be deployed to the self-hosted environment alongside the main backend and MinIO. Azure test deployment (see project notes) should include all three.
+**Infrastructure note:** This service will also be deployed to the self-hosted environment alongside the main backend and MinIO.
 
 ---
 
@@ -272,7 +270,9 @@ Service emits status updates (`scanning`, `processing`, `saved`, `error`) back t
 
 ### 7. Redesign / theming
 
-> Status: **in progress** — design exploration underway via Claude design feature
+> Status: **in progress** — wireframes exist for the landing page and recipe detail page; full implementation not yet started
+
+**Current state:** Barebones wireframe designs exist for the landing/home page and recipe detail page. The overall direction is established but other pages (recipe creation form, search, etc.) haven't been wireframed yet. Recommendation: finish the wireframe pass across all pages before committing to implementation, to avoid mid-redesign pivots.
 
 **Problem:** The current UI is functional but feels empty, wireframe-like, and uninviting. Even the developer doesn't want to use it. Nobody will adopt a recipe app they don't enjoy looking at, regardless of how well-built the underlying code is.
 
@@ -289,22 +289,18 @@ Service emits status updates (`scanning`, `processing`, `saved`, `error`) back t
 - **Rich cards** — recipe cards should show image, title, tags, and at minimum one piece of metadata (e.g. number of steps or ingredients)
 - **Typography hierarchy** — recipe names, section headers, ingredient lists, step numbers all need distinct treatment
 
-**Visual direction:**
-TBD — being explored via Claude design feature. Document the output here once a direction is chosen (colour palette, typography, spacing scale, card design).
+**Component library decision — required before implementation starts:**
+The current stack (Radix UI primitives + Tailwind 4 + shadcn-style components) is under review. The redesign is the right moment to make this call — switching mid-implementation would be painful.
 
-**Component library:**
-The current stack (Radix UI primitives + Tailwind 4 + shadcn-style components) gives full control but requires building everything from scratch. If the design output points toward a richer, more opinionated visual style, switching to a more prebuilt component library (e.g. Mantine, Chakra UI, or a shadcn alternative with more built-in variants) may be the right call.
-
-**Decision criteria for keeping vs. switching:**
-- Keep Radix + Tailwind if the design is custom enough that prebuilt components would need heavy overriding anyway
-- Switch if a library ships components that already look close to the target design out of the box — saves time and produces a more consistent result
+- **Keep Radix + Tailwind** if the design is custom enough that prebuilt components would need heavy overriding anyway
+- **Switch** (e.g. Mantine, Chakra UI, or another opinionated library) if a library ships components that already look close to the target design — saves time and produces more consistency out of the box
 
 **Constraints regardless of library choice:**
 - Dark mode must remain supported
 - All colours via CSS variables — no hardcoded values — so theming stays centralised
 - Accessibility (Radix's main strength) must not regress
 
-**Scope warning:** This will likely touch every layout file, most components, and possibly the routing structure if page layouts change significantly. Treat it as a full rewrite of the visual layer, not a reskin.
+**Scope warning:** This will touch every layout file and most components. Treat it as a full rewrite of the visual layer, not a reskin. Do not start until: (a) all pages are wireframed, and (b) the component library decision is made.
 
 ---
 
@@ -341,25 +337,30 @@ The current stack (Radix UI primitives + Tailwind 4 + shadcn-style components) g
 
 ### 11. Observability (logging, tracing, metrics)
 
-> Status: **partially in progress** — Sentry error tracking being implemented (§13). Full observability stack (Prometheus, Grafana, OpenTelemetry) is future work.
+> Status: **partially complete** — Sentry error tracking is live (§13). Structured logging via `tracing` is live on the backend. Full observability stack (Prometheus, Grafana, OpenTelemetry distributed tracing) is future work.
 
-**Scope:** Covers all services — main Rust backend, image processing service, and frontend.
+**Backend (Rust) — current:**
+- Structured logging via `tracing` crate with JSON output, log levels controlled by `RUST_LOG` env var
+- Sentry integration via `sentry-tracing` — `tracing::error!()` events are forwarded to Sentry automatically
 
-**Backend (Rust):**
-- **Structured logging** — `tracing` crate with JSON output, log levels per environment (debug locally, warn/error in prod)
-- **Distributed tracing** — trace IDs propagated across the main backend and image processing service so a single user request can be followed end-to-end. OpenTelemetry is the standard here.
-- **Metrics** — request counts, error rates, latency histograms, image processing queue depth. Prometheus-compatible export (Rust has good support via `metrics` crate).
+**Backend (Rust) — future:**
+- **Distributed tracing** — trace IDs propagated across the main backend and image processing service. OpenTelemetry is the standard here.
+- **Metrics** — request counts, error rates, latency histograms. Prometheus-compatible export via `metrics` crate.
 
-**Frontend:**
-- The Axios interceptor layer (§1) is the natural place to attach trace IDs to outgoing requests and capture client-side error rates
-- Sentry JS SDK handles unhandled errors and promise rejections automatically once installed (§13)
+**Frontend — current:**
+- Sentry captures all unhandled errors and promise rejections
+- `Sentry.ErrorBoundary` wraps the app root — render crashes are caught and reported
+
+**Frontend — future:**
+- Axios interceptor can attach trace IDs to outgoing requests once distributed tracing is set up
+- `browserTracingIntegration()` for page load / navigation performance (low priority)
 
 **Infrastructure (future):**
 - Collector: OpenTelemetry Collector as a sidecar/agent
-- Visualisation: Grafana for metrics + traces (pairs with Prometheus and Tempo/Jaeger). Self-hosted, fits the no-cloud-provider constraint.
-- Log aggregation: Loki (also Grafana ecosystem, minimal overhead)
+- Visualisation: Grafana for metrics + traces (pairs with Prometheus and Tempo/Jaeger). Self-hosted.
+- Log aggregation: Loki (Grafana ecosystem, minimal overhead)
 
-**When to add full stack:** After core features are stable and deployed. Good milestone: add it when the first real user outside the developer starts using the app.
+**When to add full stack:** After core features are stable. Good milestone: when the first real user outside the developer starts using the app.
 
 ---
 
@@ -372,8 +373,8 @@ The frontend and Rust backend now live in a single monorepo. Both were imported 
 **Current structure:**
 ```
 monorepo/
-├── client/    # React + Vite frontend (was: standalone repo)
-└── server/    # Rust backend / kochservice (was: standalone repo)
+├── client/    # React + Vite frontend
+└── server/    # Rust backend / kochservice
 ```
 
 **Root CI/CD:** A root `.gitlab-ci.yml` uses `include:` to pull in `client/.gitlab-ci.yml` and `server/.gitlab-ci.yml`, with path-based `changes:` rules so client commits don't trigger backend builds and vice versa.
@@ -394,6 +395,8 @@ monorepo/
 | Database | PostgreSQL |
 | API docs | utoipa + Scalar |
 | Migrations | sea-orm-cli / SeaORM Migrator |
+| Logging | `tracing` + `tracing-subscriber` (JSON output) |
+| Error tracking | `sentry` + `sentry-tracing` |
 
 Server runs on **port 8080**. API docs available at `http://localhost:8080/scalar`.
 
@@ -408,6 +411,7 @@ server/src/
 │   ├── recipe/       # recipe_handler.rs + recipe_dto.rs
 │   ├── ingredient/   # ingredient_handler.rs + ingredient_dto.rs
 │   ├── tag/          # tag_handler.rs + tag_dto.rs
+│   ├── sentry_tunnel/# POST /sentry-tunnel — proxies frontend Sentry envelopes
 │   └── openapi_spec/ # GET /openapi (raw spec JSON)
 ├── application/      # Business logic / services
 │   ├── recipe/       # recipe_service.rs
@@ -419,7 +423,7 @@ server/src/
 │   ├── ingredient/   # Ingredient, IngredientId
 │   ├── tag/          # Tag, TagId
 │   └── recipe_ingredient/
-└── infrastructure/   # AppState, error types, OpenAPI config, DB seeder
+└── infrastructure/   # AppState, error types, OpenAPI config, DB seeder, tracing init
 ```
 
 **Request flow:** `api handler` → `application service` → SeaORM (via `AppState.db`)
@@ -430,6 +434,7 @@ server/src/
 - **Seeder** — `should_seed()` / `seed_all()` runs after migrations if the database is empty. Seeds recipe/ingredient/tag test data automatically.
 - **AppState** — shared via Axum's `.with_state()`. Currently holds only the SeaORM `DatabaseConnection`.
 - **IDs are UUIDs v7** — time-ordered, used for all entity primary keys.
+- **Sentry guard** — initialised in `main.rs` before `tracing` and kept alive for the duration of the process. `SENTRY_DSN` unset = Sentry disabled (no-op), safe for local dev.
 
 ### Dev setup
 
@@ -443,142 +448,57 @@ See `server/README.md`. Requires Docker (for PostgreSQL) and `sea-orm-cli`. Set 
 
 ### 13. Error tracking (Sentry + GitLab integration)
 
-> Status: **in progress**
-> - Frontend SDK: **complete**
-> - Sentry tunnel (backend proxy): **next**
-> - Backend `tracing` + Sentry: **next**
+> Status:
+> - Frontend SDK + ErrorBoundary: **complete**
+> - Sentry tunnel (`POST /sentry-tunnel`): **complete**
+> - Backend `tracing` + Sentry: **complete**
 > - GitLab Monitor integration: **planned**
 
-**Using:** Sentry.io free tier (5k errors/month). Separate Sentry projects for frontend and backend for cleaner filtering and independent quotas.
-
-**Philosophy:** Sentry is the transport, not the instrumentation. The backend needs `tracing` to produce structured data; Sentry forwards `tracing::error!()` events automatically. The frontend needs error boundaries to catch render crashes; Sentry catches everything else (unhandled errors, promise rejections) via its global hooks.
+**Using:** Sentry.io free tier (5k errors/month). Separate Sentry projects for frontend and backend.
 
 ---
 
 #### Frontend — complete
 
-**SDK:** `@sentry/react` installed. Init in `src/main.tsx` before React renders.
+- `@sentry/react` initialised in `src/main.tsx` with `tunnel: '/sentry-tunnel'`
+- `Sentry.ErrorBoundary` wraps the app root — render crashes are caught and show a fallback UI instead of a blank page
+- Unhandled JS errors and promise rejections captured automatically
 
-**Current config:**
-```ts
-Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN,
-  environment: import.meta.env.VITE_DEPLOY_ENV ?? 'development',
-  sendDefaultPii: false,
-})
-```
+**CI/CD variables (all set):**
+- `VITE_SENTRY_DSN` — scoped per environment (`dev/client`, `prod/client`)
+- `VITE_DEPLOY_ENV` — `development` / `production`, set in `workflow:rules`
 
-**Pipeline variables (all set):**
-- `VITE_SENTRY_DSN` — GitLab CI/CD variable, scoped per environment (`dev/client`, `prod/client`)
-- `VITE_DEPLOY_ENV` — set in root `workflow:rules` (`development` for dev branch, `production` for main); passed as Docker build arg
+**Known gotcha — Sentry inbound filters:** "Filter out events coming from localhost" is on by default and silently drops local dev events. Disable under **Sentry project → Settings → Inbound Filters** for local testing.
 
-**What's captured automatically:** unhandled JS errors, unhandled promise rejections.
-
-**Still missing on frontend:**
-- `Sentry.ErrorBoundary` around the app root — render crashes currently show a blank page and are not reported
-- Axios interceptor hook-in (when Axios is implemented — §1)
-- `browserTracingIntegration()` for page load / navigation performance tracing (low priority)
-
-**Known gotcha — Sentry inbound filters:** Sentry's "Filter out events coming from localhost" is enabled by default and silently drops local dev events even when the network request returns 200 with a valid event ID. Disable it under **Sentry project → Settings → Inbound Filters** for local testing.
-
-**Tunnel (not yet implemented):** Ad blockers block direct requests to `ingest.de.sentry.io`. Until the tunnel is in place, disable your ad blocker for local dev. See tunnel section below.
+**Still to do:**
+- `browserTracingIntegration()` for page load / navigation tracing (low priority)
+- Source maps — required before going live with real users so stack traces are readable. Use `@sentry/vite-plugin`, needs `SENTRY_AUTH_TOKEN` CI variable.
 
 ---
 
-#### Sentry tunnel — next
+#### Sentry tunnel — complete
 
-The tunnel is a single endpoint on the Rust backend (`POST /sentry-tunnel`) that proxies frontend error envelopes to Sentry's ingest. The frontend sends to your own domain instead of directly to Sentry, bypassing ad blockers entirely.
+`POST /sentry-tunnel` on the Rust backend proxies frontend Sentry envelopes to `ingest.de.sentry.io`, bypassing ad blockers. Validates the DSN host and project ID from the envelope header before forwarding (prevents open proxy abuse).
 
-**Frontend change (`src/main.tsx`):**
-```ts
-Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN,
-  tunnel: '/sentry-tunnel',   // add this line
-  environment: import.meta.env.VITE_DEPLOY_ENV ?? 'development',
-  sendDefaultPii: false,
-})
-```
-
-**Backend endpoint (`api/sentry_tunnel/`):**
-
-The tunnel must validate that the envelope is destined for your own Sentry project (by checking the DSN host and project ID parsed from the envelope header) before forwarding, to prevent abuse as an open proxy.
-
-```rust
-// POST /sentry-tunnel
-// 1. Read raw request body (the Sentry envelope)
-// 2. Parse the first line of the envelope as JSON to extract the DSN
-// 3. Validate the DSN host matches your known Sentry ingest host
-// 4. Validate the project ID matches your known project ID
-// 5. Forward the raw body to https://<sentry-host>/api/<project-id>/envelope/
-//    with the same Content-Type header
-// 6. Return Sentry's response upstream
-```
-
-**Crates needed:**
-```toml
-reqwest = { version = "0.12", features = ["json"] }  # likely already present or needed anyway
-```
-
-**Security:** Without the DSN/project ID validation in step 3–4, the endpoint is an open HTTP proxy. Always validate before forwarding.
-
-**Environment variables:**
-- `SENTRY_TUNNEL_DSN` — the frontend DSN, used server-side to validate incoming envelopes. Scoped per environment in GitLab CI.
+**Environment variable:** `SENTRY_DSN_CLIENT` — the frontend DSN, used server-side for envelope validation.
 
 ---
 
-#### Backend `tracing` + Sentry — next
+#### Backend `tracing` + Sentry — complete
 
-**Crates to add to `server/Cargo.toml`:**
-```toml
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
-sentry = { version = "0.34", features = ["tracing"] }
-sentry-tracing = "0.34"
-```
-
-**`tracing` setup — new file `server/src/infrastructure/tracing.rs`:**
-```rust
-pub fn init_tracing() {
-    let sentry_layer = sentry_tracing::layer();
-
-    tracing_subscriber::registry()
-        .with(EnvFilter::from_default_env())
-        .with(fmt::layer().json())
-        .with(sentry_layer)
-        .init();
-}
-```
-Use `.pretty()` instead of `.json()` for local dev readability — controlled via a `RUST_LOG_FORMAT=pretty` env var or a compile-time feature flag.
-
-**Sentry init in `server/src/main.rs`:**
-Sentry guard must be initialised before `tracing` and kept alive for the entire duration of `main` — dropping it early causes in-flight events to be lost on shutdown.
-
-```rust
-let _sentry_guard = sentry::init((
-    std::env::var("SENTRY_DSN").unwrap_or_default(),
-    sentry::ClientOptions {
-        release: sentry::release_name!(),
-        traces_sample_rate: 0.1,
-        environment: Some(std::env::var("DEPLOY_ENV")
-            .unwrap_or_else(|_| "development".into()).into()),
-        ..Default::default()
-    },
-));
-init_tracing();
-```
-
-Using `unwrap_or_default()` on the DSN means Sentry is simply disabled (no-op) when `SENTRY_DSN` is not set — useful for local dev without requiring the variable.
+- `tracing` + `tracing-subscriber` for structured JSON logging, level controlled by `RUST_LOG`
+- `sentry` + `sentry-tracing` — `tracing::error!()` events forwarded to Sentry automatically
+- `#[tracing::instrument]` on handlers and services for span context in Sentry events
 
 **Usage conventions:**
 - `tracing::error!()` — forwarded to Sentry; use for unexpected failures
-- `tracing::warn!()` — logged but not sent to Sentry by default
-- `tracing::info!()` / `tracing::debug!()` — operational logs only, never sent to Sentry
-- `#[tracing::instrument]` on handlers and service methods — attaches span context to every Sentry event so you can see which endpoint triggered the error
+- `tracing::warn!()` — logged, not sent to Sentry by default
+- `tracing::info!()` / `tracing::debug!()` — operational logs only
 
-**Environment variables to add to the backend deploy job:**
-- `SENTRY_DSN` — scoped per environment (`dev/server`, `prod/server`) in GitLab CI
-- `RUST_LOG` — `warn` for prod, `debug` for dev (set in GitLab CI/CD variables)
-- `DEPLOY_ENV` — already in `workflow:rules`; add `-e DEPLOY_ENV=$DEPLOY_ENV` to the `docker run` command in `backend:deploy`
+**CI/CD variables (all set):**
+- `SENTRY_DSN` — scoped per environment (`dev/server`, `prod/server`)
+- `RUST_LOG` — `warn` for prod, `debug` for dev
+- `DEPLOY_ENV` — passed to the container via `docker run`
 
 ---
 
@@ -588,18 +508,7 @@ Surfaces Sentry errors inside GitLab without leaving the dashboard.
 
 **Setup: GitLab project → Settings → Monitor → Error Tracking**
 1. Select "Sentry" as provider
-2. Enter Sentry API URL (`https://sentry.io/`) and a Sentry auth token (create under Sentry user settings → API tokens, with `project:read` scope)
-3. Select the Sentry project to link (do this twice — once for the frontend project, once for backend if using separate projects)
+2. Enter Sentry API URL (`https://sentry.io/`) and a Sentry auth token (`project:read` scope)
+3. Select the Sentry project (repeat for frontend and backend projects)
 
-**What this gives you:**
-- GitLab Monitor → Error Tracking shows live errors from Sentry
-- Each error links back to the commit that introduced it via the `release` field
-- Error status (resolved/ignored) manageable from GitLab
-
-**Source maps (frontend — do this before going live with real users):**
-Without source maps, Sentry stack traces point at minified bundle line numbers — useless for debugging. The Sentry Vite plugin uploads maps automatically at build time:
-```bash
-pnpm add -D @sentry/vite-plugin
-```
-Requires a `SENTRY_AUTH_TOKEN` CI variable and the org/project slugs in `vite.config.ts`. Source map files should be excluded from the nginx-served build (the plugin handles this).
-
+**What this gives you:** live errors in GitLab Monitor → Error Tracking, each linking back to the introducing commit via the `release` field.
