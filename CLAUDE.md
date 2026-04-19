@@ -15,7 +15,7 @@ Recipe management frontend. Intentionally built to enterprise-grade standards fo
 | Forms | TanStack Form v1 |
 | Client state | Zustand v5 |
 | Styling | Tailwind CSS 4 |
-| Components | Radix UI primitives + shadcn-style (⚠️ under review — see §7) |
+| Components | Custom Tailwind components (`src/components/`) — shadcn removed (see §7) |
 | Notifications | Sonner |
 | Icons | Lucide React |
 | API codegen | Orval (OpenAPI → TypeScript) |
@@ -41,24 +41,29 @@ src/
 │   ├── sentry/       # Generated Sentry tunnel client
 │   └── kochservice.schemas.ts
 ├── components/
-│   └── ui/           # Radix-based primitives (Button, Input, Card, Combobox, etc.)
+│   ├── button.tsx    # KsButton — variants: default, accent, dark, outline, destructive; sizes: default, sm, lg, icon
+│   ├── card.tsx      # KsCard — optional hover prop
+│   ├── navbar.tsx    # Floating sketchy nav (Navbar C) + mobile hamburger drawer
+│   └── ui/           # Thin stubs for legacy routes — re-export or wrap the new primitives
+│                     # (badge, card, input, label, separator, skeleton, switch, textarea,
+│                     #  combobox, dropdown-menu, tabs) — do NOT add new shadcn-style components here
 ├── hooks/            # Global TanStack Query hooks — all server state lives here
 │   ├── use-recipe.ts
 │   ├── use-ingredient.ts
 │   ├── use-tag.ts
-│   └── use-mobile.ts # Shadcn mobile breakpoint hook
+│   └── use-mobile.ts  # ⚠️ shadcn leftover — not imported anywhere, safe to delete
 ├── lib/
 │   ├── axios-client.ts  # Axios instance — all API requests pass through here
 │   └── utils.ts
 ├── routes/           # TanStack Router file-based routing
-│   ├── __root.tsx
-│   ├── index.tsx
+│   ├── __root.tsx    # Root layout: <Navbar /> persists across all routes
+│   ├── index.tsx     # Landing page (fully implemented)
 │   ├── recipe/
-│   │   ├── $id.tsx
-│   │   ├── new.tsx
+│   │   ├── $id.tsx   # Recipe detail + Kochmodus overlay (fully implemented)
+│   │   ├── new.tsx   # New recipe form
 │   │   └── use-new.ts  # ⚠️ see known issues
 │   └── ...
-└── styles.css
+└── styles.css        # Design tokens + Tailwind 4 theme
 ```
 
 ### Data flow convention
@@ -78,15 +83,44 @@ All server state is managed through the global hooks in `src/hooks/`. Components
 - **Preload on intent** — TanStack Router preloads routes on hover/focus
 - **Centralised HTTP boundary** — `axios-client.ts` holds all cross-cutting request/response logic; hooks and components are never touched when transport behaviour changes
 
+### Design system
+
+All colours, fonts, shadows, and radii are CSS variables defined in `src/styles.css` and exposed to Tailwind 4 via `@theme` / `@theme inline`. Never hardcode colours.
+
+```
+:root / .dark  →  --ink, --paper, --paper-2, --accent (raw CSS vars, change in dark mode)
+
+@theme          →  --font-hand, --font-head, --radius-sketchy, --radius-card,
+                   --shadow-ink, --shadow-ink-sm, --shadow-ink-card, --shadow-ink-lg, etc.
+                   (static, compiled at build time — do NOT reference CSS vars here)
+
+@theme inline   →  --color-ink, --color-paper, --color-accent, etc.
+                   (dynamic — these reference the CSS vars so they update in dark mode)
+                   also: shadcn compat vars for Sonner (--color-background, --color-foreground…)
+```
+
+Tailwind utilities generated:
+- `text-ink`, `bg-paper`, `bg-accent`, `border-ink-3` → colours
+- `font-hand`, `font-head` → typefaces
+- `rounded-sketchy`, `rounded-sketchy-sm`, `rounded-card`, `rounded-nav` → border radii
+- `shadow-ink`, `shadow-ink-sm`, `shadow-ink-card`, `shadow-ink-lg`, `shadow-ink-hero` → box shadows
+
+Custom CSS classes (not expressible in Tailwind): `.hatched`, `.hatched-sm` (diagonal line patterns), `.nav-active` (wavy underline).
+
 ---
 
 ## Known Issues / Tech Debt
 
 - **`use-new.ts` route warning** — TanStack Router emits a warning because `src/routes/recipe/use-new.ts` doesn't export a `Route`. The `routeFileIgnorePattern` config should exclude it but doesn't seem to match. Either rename to `-use-new.ts` or fix the ignore pattern.
-- **Loading states are bare `<div>Loading...</div>`** — should be replaced with skeleton components (`src/components/ui/skeleton.tsx` exists).
-- **Recipe images are non-functional** — the detail page renders `<img src="">` when no image is set, causing a React warning.
+- **Loading states are bare `<div>Loading...</div>`** — should be replaced with skeleton components. `src/components/ui/skeleton.tsx` exists (simple pulse animation) but is not yet used on the recipe or home loading states.
+- **Recipe images are hatched placeholders** — no real image support yet. The recipe detail hero and cards all render the hatched CSS pattern. This is intentional until photo upload (§4) is implemented. Do not add `<img src="">` — it causes React warnings.
+- **Ingredient scaling formula assumes 2 default servings** — `scaledAmount = amount * portions / 2`. The backend has no servings field, so 2 is hardcoded as the base. This will need revisiting if the data model gains a servings field.
+- **Kochmodus shows all ingredients, not per-step** — the wireframe intended per-step ingredient highlighting ("Du brauchst jetzt"), but the backend has no step↔ingredient mapping. Currently all ingredients are shown in the sidebar throughout.
+- **"Speichern", "Drucken", "Teilen" buttons are non-functional** — UI placeholders, blocked on Auth (§2) for save, and no share/print logic yet.
 - **Backend has no tests** — `cargo tarpaulin` is wired in CI and will report 0% until tests are added.
 - **`server/README.md` is stale** — documents a `handlers/`, `services/`, `repositories/` layout that no longer matches the real `api/`, `application/`, `domain/`, `infrastructure/` structure.
+- **`src/components/ui/` stubs** — these are thin compatibility wrappers so legacy routes (`recipe/new`, etc.) compile after shadcn removal. They are not the canonical components. When those routes get redesigned, import from `@/components/button` and `@/components/card` directly and delete the stub.
+- **`src/hooks/use-mobile.ts`** — shadcn leftover, not imported anywhere. Safe to delete.
 
 ---
 
@@ -94,11 +128,13 @@ All server state is managed through the global hooks in `src/hooks/`. Components
 
 **Frontend:** Vitest 4 + Testing Library. 4 test files, 38 tests. Run with `pnpm vitest run`.
 
-Covered so far:
+Covered:
 - `src/lib/axios-client.ts` — interceptor behaviour (toasts, Sentry, re-throw)
 - `src/hooks/use-recipe.ts` — infinite query, cache-first lookup, create/update mutations
 - `src/routes/recipe/use-new.ts` — form defaults, loading states, submission, navigation
 - `src/routes/recipe/new.tsx` — smoke tests
+
+Not yet covered: `src/routes/index.tsx` (landing page), `src/routes/recipe/$id.tsx` (recipe detail + Kochmodus), `src/components/navbar.tsx`. These should get tests when they stabilise.
 
 **CI coverage reporting:**
 - JUnit XML → GitLab Tests tab (38 tests visible per pipeline)
@@ -270,37 +306,54 @@ Service emits status updates (`scanning`, `processing`, `saved`, `error`) back t
 
 ### 7. Redesign / theming
 
-> Status: **in progress** — wireframes exist for the landing page and recipe detail page; full implementation not yet started
+> Status: **in progress** — design system, landing page, and recipe detail page are complete; remaining routes (search, new recipe form, categories, account) not yet redesigned
 
-**Current state:** Barebones wireframe designs exist for the landing/home page and recipe detail page. The overall direction is established but other pages (recipe creation form, search, etc.) haven't been wireframed yet. Recommendation: finish the wireframe pass across all pages before committing to implementation, to avoid mid-redesign pivots.
+#### What's done
 
-**Problem:** The current UI is functional but feels empty, wireframe-like, and uninviting. Even the developer doesn't want to use it. Nobody will adopt a recipe app they don't enjoy looking at, regardless of how well-built the underlying code is.
+**Component library decision — made:** shadcn was removed. The design is custom enough (sketchy borders, offset box-shadows, handwritten fonts, warm paper palette) that no prebuilt library matched — everything would have needed heavy overriding. Approach: raw Tailwind 4 + a small set of custom primitives in `src/components/`.
 
-**Root causes of the "empty" feeling:**
-- No images on recipe cards — everything looks like a list, not a collection of food
-- No visual hierarchy — recipe names, metadata, and actions all have the same weight
-- Default shadcn palette — reads as unfinished, no personality
-- Low information density on cards — not enough reason to click
+**Design system — complete.** All tokens live in `src/styles.css`. See the Design system section under Architecture for the full token reference.
 
-**UX goals (independent of visual style):**
-- **Fast-feeling** — skeletons on load, optimistic updates on mutations, instant feedback on all interactions
-- **Obvious** — user never wonders what to do next; clear affordances everywhere
-- **Satisfying** — hover states, transitions, toasts that feel intentional, not bolted on
-- **Rich cards** — recipe cards should show image, title, tags, and at minimum one piece of metadata (e.g. number of steps or ingredients)
-- **Typography hierarchy** — recipe names, section headers, ingredient lists, step numbers all need distinct treatment
+**Wireframe source:** `Kochservice Wireframes v2.html` from the Claude Design handoff. The chat transcript establishes the intent behind each layout decision. Keep it as the reference when implementing remaining pages.
 
-**Component library decision — required before implementation starts:**
-The current stack (Radix UI primitives + Tailwind 4 + shadcn-style components) is under review. The redesign is the right moment to make this call — switching mid-implementation would be painful.
+**Navbar — complete.** Sketchy Floater (Navbar C) — a floating pill-shaped bar that stays sticky at `top: 12px`. Links, search input, theme toggle, login button on desktop. Hamburger → slide-in drawer on mobile. Implemented in `src/components/navbar.tsx`, mounted once in `__root.tsx` so it persists across every route.
 
-- **Keep Radix + Tailwind** if the design is custom enough that prebuilt components would need heavy overriding anyway
-- **Switch** (e.g. Mantine, Chakra UI, or another opinionated library) if a library ships components that already look close to the target design — saves time and produces more consistency out of the box
+**Landing page — complete.** `src/routes/index.tsx`. Sections:
+- Hero (headline + stickers + CTA buttons)
+- Hate list (what we removed)
+- How it works (3-step cards)
+- Popular recipes (4-up grid, real API data or placeholder)
+- Feature grid (6 features)
+- Big orange CTA section
+- Footer (4-column grid)
 
-**Constraints regardless of library choice:**
-- Dark mode must remain supported
-- All colours via CSS variables — no hardcoded values — so theming stays centralised
-- Accessibility (Radix's main strength) must not regress
+**Recipe detail page — complete.** `src/routes/recipe/$id.tsx`. Features:
+- Hero: 16:10 hatched image placeholder + title, ingredient count, step count, tags, action buttons
+- Orange "Kochmodus starten" CTA bar (keyboard hint: `SPACE`)
+- Desktop: 2-column — 280px ingredient sidebar with checkboxes + portion scaler (−/＋) | numbered steps list
+- Mobile: big orange CTA + tab switcher (Zutaten / Schritte)
+- **Kochmodus overlay** — fullscreen step-by-step mode:
+  - Progress dots row, clickable to jump steps
+  - Large step text on the left, ingredient checklist + timer on the right
+  - Timer: preset buttons (5/10/15 min), play/pause/reset
+  - Bottom nav: prev / step counter / next, last step becomes "Fertig — Guten Appetit!"
+  - Keyboard: `→` / `Space` = next, `←` = prev, `Esc` = close
 
-**Scope warning:** This will touch every layout file and most components. Treat it as a full rewrite of the visual layer, not a reskin. Do not start until: (a) all pages are wireframed, and (b) the component library decision is made.
+#### What's still needed
+
+The following pages have not been redesigned yet — they still use the old layout or are stubs:
+
+| Route | Status | Notes |
+|---|---|---|
+| `/recipe/new` | old layout | Uses `ui/` stubs; functional but unstyled for the new design |
+| `/recipe/$id` loading state | placeholder | `<RecipeLoading />` uses skeleton stubs, not the new design |
+| Search / recipe list | not built | No route exists yet |
+| Categories | not built | No route exists yet |
+| Bookmarks / Planer | not built | No route exists yet |
+| Account / Login / Signup | not built | Blocked on Auth (§2) |
+| Legal pages | not built | See §3 |
+
+**Recommendation before implementing remaining pages:** wireframe them first in the Claude Design tool to keep the design consistent before committing to code. The landing page and recipe detail page establish the visual language — new pages should follow the same token usage and component patterns.
 
 ---
 
@@ -471,8 +524,8 @@ See `server/README.md`. Requires Docker (for PostgreSQL) and `sea-orm-cli`. Set 
 **Known gotcha — Sentry inbound filters:** "Filter out events coming from localhost" is on by default and silently drops local dev events. Disable under **Sentry project → Settings → Inbound Filters** for local testing.
 
 **Still to do:**
-- `browserTracingIntegration()` for page load / navigation tracing (low priority)
-- Source maps — required before going live with real users so stack traces are readable. Use `@sentry/vite-plugin`, needs `SENTRY_AUTH_TOKEN` CI variable.
+- Source maps — required before going live with real users so stack traces are readable in Sentry. Add `@sentry/vite-plugin` to `vite.config.ts`, set `SENTRY_AUTH_TOKEN` in GitLab CI variables.
+- `browserTracingIntegration()` for page load / navigation tracing (low priority, deferred).
 
 ---
 
