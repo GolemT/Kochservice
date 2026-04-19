@@ -8,9 +8,6 @@ const mockCaptureException = vi.fn()
 vi.mock('sonner', () => ({ toast: { success: mockToastSuccess, error: mockToastError } }))
 vi.mock('@sentry/react', () => ({ captureException: mockCaptureException }))
 
-// Import after mocks are set up
-const { axiosClient } = await import('./axios-client')
-
 function makeResponse(
   method: string,
   overrides: Partial<InternalAxiosRequestConfig> = {},
@@ -39,10 +36,6 @@ function makeError(
 // using a mock adapter approach: spy on the instance internals.
 // Since we can't export the private instance, we test through the public API
 // by mocking at the axios level.
-
-import axios from 'axios'
-
-const mockAxiosInstance = vi.spyOn(axios, 'create')
 
 describe('axios-client interceptors', () => {
   beforeEach(() => {

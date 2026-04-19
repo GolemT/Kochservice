@@ -10,7 +10,6 @@ export default defineConfig({
       client: 'axios',
       mode: 'tags-split',
       clean: true,
-      prettier: true,
       override: {
         mutator: {
           path: './src/lib/axios-client.ts',

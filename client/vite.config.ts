@@ -1,11 +1,9 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { fileURLToPath, URL } from 'node:url'
-import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,12 +12,6 @@ export default defineConfig({
       target: 'react',
       autoCodeSplitting: true,
       routeFileIgnorePattern: '(\\.test\\.|\\.spec\\.|__tests__|/use-)',
-    }),
-    visualizer({
-      open: true,
-      filename: './dist/stats.html',
-      gzipSize: true,
-      brotliSize: true,
     }),
     viteReact(),
     tailwindcss(),
