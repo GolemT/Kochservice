@@ -34,6 +34,7 @@ frontend:unit_test:
   coverage: '/Lines\s*:\s*([\d.]+)%/'
   artifacts:
     reports:
+      junit: client/coverage/junit.xml
       coverage_report:
         coverage_format: cobertura
         path: client/coverage/cobertura-coverage.xml

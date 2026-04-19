@@ -25,6 +25,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    reporters: process.env.CI
+      ? ['default', ['junit', { outputFile: './coverage/junit.xml' }]]
+      : ['default'],
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'cobertura'],
