@@ -11,128 +11,68 @@ import type {
   UpdateIngredientRequest,
 } from '../kochservice.schemas'
 
-import { apiClient } from '../../lib/api-client'
+import { axiosClient } from '../../lib/axios-client'
 
-export type getIngredientsResponse200 = {
-  data: IngredientsResponse
-  status: 200
+export const getIngredients = () => {
+  const getIngredients = () => {
+    return axiosClient<IngredientsResponse>({
+      url: `/ingredient`,
+      method: 'GET',
+    })
+  }
+  const createIngredient = (
+    createIngredientRequest: CreateIngredientRequest,
+  ) => {
+    return axiosClient<IngredientResponse>({
+      url: `/ingredient`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createIngredientRequest,
+    })
+  }
+  const getIngredient = (id: string) => {
+    return axiosClient<IngredientResponse>({
+      url: `/ingredient/${id}`,
+      method: 'GET',
+    })
+  }
+  const updateIngredient = (
+    id: string,
+    updateIngredientRequest: UpdateIngredientRequest,
+  ) => {
+    return axiosClient<IngredientResponse>({
+      url: `/ingredient/${id}`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: updateIngredientRequest,
+    })
+  }
+  const deleteIngredient = (id: string) => {
+    return axiosClient<IngredientResponse>({
+      url: `/ingredient/${id}`,
+      method: 'DELETE',
+    })
+  }
+  return {
+    getIngredients,
+    createIngredient,
+    getIngredient,
+    updateIngredient,
+    deleteIngredient,
+  }
 }
-
-export type getIngredientsResponseSuccess = getIngredientsResponse200 & {
-  headers: Headers
-}
-export type getIngredientsResponse = getIngredientsResponseSuccess
-
-export const getGetIngredientsUrl = () => {
-  return `/ingredient`
-}
-
-export const getIngredients = async (
-  options?: RequestInit,
-): Promise<getIngredientsResponse> => {
-  return apiClient<getIngredientsResponse>(getGetIngredientsUrl(), {
-    ...options,
-    method: 'GET',
-  })
-}
-
-export type createIngredientResponse201 = {
-  data: IngredientResponse
-  status: 201
-}
-
-export type createIngredientResponseSuccess = createIngredientResponse201 & {
-  headers: Headers
-}
-export type createIngredientResponse = createIngredientResponseSuccess
-
-export const getCreateIngredientUrl = () => {
-  return `/ingredient`
-}
-
-export const createIngredient = async (
-  createIngredientRequest: CreateIngredientRequest,
-  options?: RequestInit,
-): Promise<createIngredientResponse> => {
-  return apiClient<createIngredientResponse>(getCreateIngredientUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createIngredientRequest),
-  })
-}
-
-export type getIngredientResponse200 = {
-  data: IngredientResponse
-  status: 200
-}
-
-export type getIngredientResponseSuccess = getIngredientResponse200 & {
-  headers: Headers
-}
-export type getIngredientResponse = getIngredientResponseSuccess
-
-export const getGetIngredientUrl = (id: string) => {
-  return `/ingredient/${id}`
-}
-
-export const getIngredient = async (
-  id: string,
-  options?: RequestInit,
-): Promise<getIngredientResponse> => {
-  return apiClient<getIngredientResponse>(getGetIngredientUrl(id), {
-    ...options,
-    method: 'GET',
-  })
-}
-
-export type updateIngredientResponse200 = {
-  data: IngredientResponse
-  status: 200
-}
-
-export type updateIngredientResponseSuccess = updateIngredientResponse200 & {
-  headers: Headers
-}
-export type updateIngredientResponse = updateIngredientResponseSuccess
-
-export const getUpdateIngredientUrl = (id: string) => {
-  return `/ingredient/${id}`
-}
-
-export const updateIngredient = async (
-  id: string,
-  updateIngredientRequest: UpdateIngredientRequest,
-  options?: RequestInit,
-): Promise<updateIngredientResponse> => {
-  return apiClient<updateIngredientResponse>(getUpdateIngredientUrl(id), {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateIngredientRequest),
-  })
-}
-
-export type deleteIngredientResponse200 = {
-  data: IngredientResponse
-  status: 200
-}
-
-export type deleteIngredientResponseSuccess = deleteIngredientResponse200 & {
-  headers: Headers
-}
-export type deleteIngredientResponse = deleteIngredientResponseSuccess
-
-export const getDeleteIngredientUrl = (id: string) => {
-  return `/ingredient/${id}`
-}
-
-export const deleteIngredient = async (
-  id: string,
-  options?: RequestInit,
-): Promise<deleteIngredientResponse> => {
-  return apiClient<deleteIngredientResponse>(getDeleteIngredientUrl(id), {
-    ...options,
-    method: 'DELETE',
-  })
-}
+export type GetIngredientsResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getIngredients>['getIngredients']>>
+>
+export type CreateIngredientResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getIngredients>['createIngredient']>>
+>
+export type GetIngredientResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getIngredients>['getIngredient']>>
+>
+export type UpdateIngredientResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getIngredients>['updateIngredient']>>
+>
+export type DeleteIngredientResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getIngredients>['deleteIngredient']>>
+>

@@ -3,7 +3,6 @@ import { useIngredients } from '@/hooks/use-ingredient.ts'
 import { useTags } from '@/hooks/use-tag.ts'
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { toast } from 'sonner'
 import type {
   CreateRecipeRequest,
   IngredientResponse,
@@ -29,11 +28,9 @@ export function useNew() {
     onSubmit: async ({ value }) => {
       try {
         const result = await createRecipe.mutateAsync(value)
-        toast.success('Recipe created successfully!')
         navigate({ to: '/recipe/$id', params: { id: result.data.id } })
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error'
-        toast.error(`Failed to create recipe: ${message}`)
+      } catch {
+        // error toast handled by axios interceptor
       }
     },
   })

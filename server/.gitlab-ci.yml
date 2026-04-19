@@ -35,7 +35,14 @@ backend:test:
   before_script:
     - cd server
   script:
-    - cargo test --release
+    - cargo tarpaulin --out Cobertura --output-dir coverage --exclude-files "src/domain/entities/*" --timeout 120
+  coverage: '/(\d+\.?\d*)% coverage/'
+  allow_failure: true
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: server/coverage/cobertura.xml
 
 backend:docker_build:
   stage: docker

@@ -7,35 +7,37 @@ import { useNew } from './use-new'
 // --- Hoisted mocks (must be before vi.mock calls) ---
 const mockCreateRecipeApi = vi.hoisted(() => vi.fn())
 const mockNavigate = vi.hoisted(() => vi.fn())
-const mockToastSuccess = vi.hoisted(() => vi.fn())
-const mockToastError = vi.hoisted(() => vi.fn())
+const mockGetIngredients = vi.hoisted(() =>
+  vi.fn().mockResolvedValue({ data: { ingredients: [{ id: '1', name: 'Flour' }] } }),
+)
+const mockGetTags = vi.hoisted(() =>
+  vi.fn().mockResolvedValue({ data: { tags: [{ id: '1', name: 'Vegetarian' }] } }),
+)
 
 vi.mock('@/api/ingredients/ingredients.ts', () => ({
-  getIngredients: vi.fn().mockResolvedValue({
-    data: { ingredients: [{ id: '1', name: 'Flour' }] },
+  getIngredients: vi.fn().mockReturnValue({
+    getIngredients: mockGetIngredients,
   }),
 }))
 
 vi.mock('@/api/tags/tags.ts', () => ({
-  getTags: vi.fn().mockResolvedValue({
-    data: { tags: [{ id: '1', name: 'Vegetarian' }] },
+  getTags: vi.fn().mockReturnValue({
+    getTags: mockGetTags,
   }),
 }))
 
 vi.mock('@/api/recipes/recipes.ts', () => ({
-  createRecipe: mockCreateRecipeApi,
-  getRecipes: vi.fn(),
-  getRecipe: vi.fn(),
-  updateRecipe: vi.fn(),
-  deleteRecipe: vi.fn(),
+  getRecipes: vi.fn().mockReturnValue({
+    getRecipes: vi.fn(),
+    createRecipe: mockCreateRecipeApi,
+    getRecipe: vi.fn(),
+    updateRecipe: vi.fn(),
+    deleteRecipe: vi.fn(),
+  }),
 }))
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
-}))
-
-vi.mock('sonner', () => ({
-  toast: { success: mockToastSuccess, error: mockToastError },
 }))
 
 // --- Helpers ---
@@ -114,10 +116,8 @@ describe('useNew', () => {
     })
 
     it('falls back to empty arrays when the API returns no data', async () => {
-      const { getIngredients } = await import('@/api/ingredients/ingredients.ts')
-      const { getTags } = await import('@/api/tags/tags.ts')
-      vi.mocked(getIngredients).mockResolvedValueOnce({ data: null } as any)
-      vi.mocked(getTags).mockResolvedValueOnce({ data: null } as any)
+      mockGetIngredients.mockResolvedValueOnce({ data: null } as any)
+      mockGetTags.mockResolvedValueOnce({ data: null } as any)
 
       const { result } = renderHook(() => useNew(), { wrapper: createWrapper() })
       await waitFor(() => expect(result.current.ingredientsLoading).toBe(false))
@@ -144,16 +144,6 @@ describe('useNew', () => {
       )
     })
 
-    it('shows a success toast after a successful submission', async () => {
-      const { result } = renderHook(() => useNew(), { wrapper: createWrapper() })
-
-      await act(async () => {
-        await result.current.form.handleSubmit()
-      })
-
-      expect(mockToastSuccess).toHaveBeenCalledWith('Recipe created successfully!')
-    })
-
     it('navigates to the new recipe page after a successful submission', async () => {
       const { result } = renderHook(() => useNew(), { wrapper: createWrapper() })
 
@@ -165,32 +155,6 @@ describe('useNew', () => {
         to: '/recipe/$id',
         params: { id: 'new-1' },
       })
-    })
-
-    it('shows an error toast with the error message when the API fails', async () => {
-      mockCreateRecipeApi.mockRejectedValueOnce(new Error('Internal server error'))
-
-      const { result } = renderHook(() => useNew(), { wrapper: createWrapper() })
-
-      await act(async () => {
-        await result.current.form.handleSubmit()
-      })
-
-      expect(mockToastError).toHaveBeenCalledWith(
-        'Failed to create recipe: Internal server error',
-      )
-    })
-
-    it('shows a generic error message when the thrown value is not an Error instance', async () => {
-      mockCreateRecipeApi.mockRejectedValueOnce('plain string error')
-
-      const { result } = renderHook(() => useNew(), { wrapper: createWrapper() })
-
-      await act(async () => {
-        await result.current.form.handleSubmit()
-      })
-
-      expect(mockToastError).toHaveBeenCalledWith('Failed to create recipe: Unknown error')
     })
 
     it('does not navigate after a failed submission', async () => {
@@ -207,18 +171,6 @@ describe('useNew', () => {
       })
 
       expect(mockNavigate).not.toHaveBeenCalled()
-    })
-
-    it('does not show a success toast after a failed submission', async () => {
-      mockCreateRecipeApi.mockRejectedValueOnce(new Error('Server error'))
-
-      const { result } = renderHook(() => useNew(), { wrapper: createWrapper() })
-
-      await act(async () => {
-        await result.current.form.handleSubmit()
-      })
-
-      expect(mockToastSuccess).not.toHaveBeenCalled()
     })
   })
 

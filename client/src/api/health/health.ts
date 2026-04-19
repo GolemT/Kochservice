@@ -4,27 +4,14 @@
  * kochservice
  * OpenAPI spec version: 0.1.0
  */
-import { apiClient } from '../../lib/api-client'
+import { axiosClient } from '../../lib/axios-client'
 
-export type healthResponse200 = {
-  data: void
-  status: 200
+export const getHealth = () => {
+  const health = () => {
+    return axiosClient<void>({ url: `/health`, method: 'GET' })
+  }
+  return { health }
 }
-
-export type healthResponseSuccess = healthResponse200 & {
-  headers: Headers
-}
-export type healthResponse = healthResponseSuccess
-
-export const getHealthUrl = () => {
-  return `/health`
-}
-
-export const health = async (
-  options?: RequestInit,
-): Promise<healthResponse> => {
-  return apiClient<healthResponse>(getHealthUrl(), {
-    ...options,
-    method: 'GET',
-  })
-}
+export type HealthResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getHealth>['health']>>
+>

@@ -33,5 +33,17 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'cobertura'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/api/**',
+        'src/test/**',
+        'src/routeTree.gen.ts',
+        'src/**/*.test.{ts,tsx}',
+      ],
+    },
   },
 })

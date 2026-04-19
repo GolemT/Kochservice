@@ -55,17 +55,21 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <ThemeProvider
-        attribute={'class'}
-        defaultTheme={'system'}
-        enableSystem
-        disableTransitionOnChange
+      <Sentry.ErrorBoundary
+        fallback={<div>Something went wrong. Please refresh the page</div>}
       >
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-          <Toaster />
-        </QueryClientProvider>
-      </ThemeProvider>
+        <ThemeProvider
+          attribute={'class'}
+          defaultTheme={'system'}
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+            <Toaster />
+          </QueryClientProvider>
+        </ThemeProvider>
+      </Sentry.ErrorBoundary>
     </StrictMode>,
   )
 }

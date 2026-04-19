@@ -12,141 +12,58 @@ import type {
   UpdateRecipeRequest,
 } from '../kochservice.schemas'
 
-import { apiClient } from '../../lib/api-client'
+import { axiosClient } from '../../lib/axios-client'
 
-export type getRecipesResponse200 = {
-  data: RecipesResponse
-  status: 200
+export const getRecipes = () => {
+  const getRecipes = (params: GetRecipesParams) => {
+    return axiosClient<RecipesResponse>({
+      url: `/recipe`,
+      method: 'GET',
+      params,
+    })
+  }
+  const createRecipe = (createRecipeRequest: CreateRecipeRequest) => {
+    return axiosClient<RecipeResponse>({
+      url: `/recipe`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createRecipeRequest,
+    })
+  }
+  const getRecipe = (id: string) => {
+    return axiosClient<RecipeResponse>({ url: `/recipe/${id}`, method: 'GET' })
+  }
+  const updateRecipe = (
+    id: string,
+    updateRecipeRequest: UpdateRecipeRequest,
+  ) => {
+    return axiosClient<RecipeResponse>({
+      url: `/recipe/${id}`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: updateRecipeRequest,
+    })
+  }
+  const deleteRecipe = (id: string) => {
+    return axiosClient<RecipeResponse>({
+      url: `/recipe/${id}`,
+      method: 'DELETE',
+    })
+  }
+  return { getRecipes, createRecipe, getRecipe, updateRecipe, deleteRecipe }
 }
-
-export type getRecipesResponseSuccess = getRecipesResponse200 & {
-  headers: Headers
-}
-export type getRecipesResponse = getRecipesResponseSuccess
-
-export const getGetRecipesUrl = (params: GetRecipesParams) => {
-  const normalizedParams = new URLSearchParams()
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  })
-
-  const stringifiedParams = normalizedParams.toString()
-
-  return stringifiedParams.length > 0
-    ? `/recipe?${stringifiedParams}`
-    : `/recipe`
-}
-
-export const getRecipes = async (
-  params: GetRecipesParams,
-  options?: RequestInit,
-): Promise<getRecipesResponse> => {
-  return apiClient<getRecipesResponse>(getGetRecipesUrl(params), {
-    ...options,
-    method: 'GET',
-  })
-}
-
-export type createRecipeResponse201 = {
-  data: RecipeResponse
-  status: 201
-}
-
-export type createRecipeResponseSuccess = createRecipeResponse201 & {
-  headers: Headers
-}
-export type createRecipeResponse = createRecipeResponseSuccess
-
-export const getCreateRecipeUrl = () => {
-  return `/recipe`
-}
-
-export const createRecipe = async (
-  createRecipeRequest: CreateRecipeRequest,
-  options?: RequestInit,
-): Promise<createRecipeResponse> => {
-  return apiClient<createRecipeResponse>(getCreateRecipeUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createRecipeRequest),
-  })
-}
-
-export type getRecipeResponse200 = {
-  data: RecipeResponse
-  status: 200
-}
-
-export type getRecipeResponseSuccess = getRecipeResponse200 & {
-  headers: Headers
-}
-export type getRecipeResponse = getRecipeResponseSuccess
-
-export const getGetRecipeUrl = (id: string) => {
-  return `/recipe/${id}`
-}
-
-export const getRecipe = async (
-  id: string,
-  options?: RequestInit,
-): Promise<getRecipeResponse> => {
-  return apiClient<getRecipeResponse>(getGetRecipeUrl(id), {
-    ...options,
-    method: 'GET',
-  })
-}
-
-export type updateRecipeResponse200 = {
-  data: RecipeResponse
-  status: 200
-}
-
-export type updateRecipeResponseSuccess = updateRecipeResponse200 & {
-  headers: Headers
-}
-export type updateRecipeResponse = updateRecipeResponseSuccess
-
-export const getUpdateRecipeUrl = (id: string) => {
-  return `/recipe/${id}`
-}
-
-export const updateRecipe = async (
-  id: string,
-  updateRecipeRequest: UpdateRecipeRequest,
-  options?: RequestInit,
-): Promise<updateRecipeResponse> => {
-  return apiClient<updateRecipeResponse>(getUpdateRecipeUrl(id), {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateRecipeRequest),
-  })
-}
-
-export type deleteRecipeResponse200 = {
-  data: RecipeResponse
-  status: 200
-}
-
-export type deleteRecipeResponseSuccess = deleteRecipeResponse200 & {
-  headers: Headers
-}
-export type deleteRecipeResponse = deleteRecipeResponseSuccess
-
-export const getDeleteRecipeUrl = (id: string) => {
-  return `/recipe/${id}`
-}
-
-export const deleteRecipe = async (
-  id: string,
-  options?: RequestInit,
-): Promise<deleteRecipeResponse> => {
-  return apiClient<deleteRecipeResponse>(getDeleteRecipeUrl(id), {
-    ...options,
-    method: 'DELETE',
-  })
-}
+export type GetRecipesResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getRecipes>['getRecipes']>>
+>
+export type CreateRecipeResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getRecipes>['createRecipe']>>
+>
+export type GetRecipeResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getRecipes>['getRecipe']>>
+>
+export type UpdateRecipeResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getRecipes>['updateRecipe']>>
+>
+export type DeleteRecipeResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getRecipes>['deleteRecipe']>>
+>

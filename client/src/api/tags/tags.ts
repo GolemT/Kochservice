@@ -11,128 +11,48 @@ import type {
   UpdateTagRequest,
 } from '../kochservice.schemas'
 
-import { apiClient } from '../../lib/api-client'
+import { axiosClient } from '../../lib/axios-client'
 
-export type getTagsResponse200 = {
-  data: TagsResponse
-  status: 200
+export const getTags = () => {
+  const getTags = () => {
+    return axiosClient<TagsResponse>({ url: `/tag`, method: 'GET' })
+  }
+  const createTag = (createTagRequest: CreateTagRequest) => {
+    return axiosClient<TagResponse>({
+      url: `/tag`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createTagRequest,
+    })
+  }
+  const getTag = (id: string) => {
+    return axiosClient<TagResponse>({ url: `/tag/${id}`, method: 'GET' })
+  }
+  const updateTag = (id: string, updateTagRequest: UpdateTagRequest) => {
+    return axiosClient<TagResponse>({
+      url: `/tag/${id}`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: updateTagRequest,
+    })
+  }
+  const deleteTag = (id: string) => {
+    return axiosClient<TagResponse>({ url: `/tag/${id}`, method: 'DELETE' })
+  }
+  return { getTags, createTag, getTag, updateTag, deleteTag }
 }
-
-export type getTagsResponseSuccess = getTagsResponse200 & {
-  headers: Headers
-}
-export type getTagsResponse = getTagsResponseSuccess
-
-export const getGetTagsUrl = () => {
-  return `/tag`
-}
-
-export const getTags = async (
-  options?: RequestInit,
-): Promise<getTagsResponse> => {
-  return apiClient<getTagsResponse>(getGetTagsUrl(), {
-    ...options,
-    method: 'GET',
-  })
-}
-
-export type createTagResponse201 = {
-  data: TagResponse
-  status: 201
-}
-
-export type createTagResponseSuccess = createTagResponse201 & {
-  headers: Headers
-}
-export type createTagResponse = createTagResponseSuccess
-
-export const getCreateTagUrl = () => {
-  return `/tag`
-}
-
-export const createTag = async (
-  createTagRequest: CreateTagRequest,
-  options?: RequestInit,
-): Promise<createTagResponse> => {
-  return apiClient<createTagResponse>(getCreateTagUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createTagRequest),
-  })
-}
-
-export type getTagResponse200 = {
-  data: TagResponse
-  status: 200
-}
-
-export type getTagResponseSuccess = getTagResponse200 & {
-  headers: Headers
-}
-export type getTagResponse = getTagResponseSuccess
-
-export const getGetTagUrl = (id: string) => {
-  return `/tag/${id}`
-}
-
-export const getTag = async (
-  id: string,
-  options?: RequestInit,
-): Promise<getTagResponse> => {
-  return apiClient<getTagResponse>(getGetTagUrl(id), {
-    ...options,
-    method: 'GET',
-  })
-}
-
-export type updateTagResponse200 = {
-  data: TagResponse
-  status: 200
-}
-
-export type updateTagResponseSuccess = updateTagResponse200 & {
-  headers: Headers
-}
-export type updateTagResponse = updateTagResponseSuccess
-
-export const getUpdateTagUrl = (id: string) => {
-  return `/tag/${id}`
-}
-
-export const updateTag = async (
-  id: string,
-  updateTagRequest: UpdateTagRequest,
-  options?: RequestInit,
-): Promise<updateTagResponse> => {
-  return apiClient<updateTagResponse>(getUpdateTagUrl(id), {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateTagRequest),
-  })
-}
-
-export type deleteTagResponse200 = {
-  data: TagResponse
-  status: 200
-}
-
-export type deleteTagResponseSuccess = deleteTagResponse200 & {
-  headers: Headers
-}
-export type deleteTagResponse = deleteTagResponseSuccess
-
-export const getDeleteTagUrl = (id: string) => {
-  return `/tag/${id}`
-}
-
-export const deleteTag = async (
-  id: string,
-  options?: RequestInit,
-): Promise<deleteTagResponse> => {
-  return apiClient<deleteTagResponse>(getDeleteTagUrl(id), {
-    ...options,
-    method: 'DELETE',
-  })
-}
+export type GetTagsResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getTags>['getTags']>>
+>
+export type CreateTagResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getTags>['createTag']>>
+>
+export type GetTagResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getTags>['getTag']>>
+>
+export type UpdateTagResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getTags>['updateTag']>>
+>
+export type DeleteTagResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getTags>['deleteTag']>>
+>

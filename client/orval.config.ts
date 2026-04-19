@@ -7,15 +7,14 @@ export default defineConfig({
     },
     output: {
       target: './src/api/',
-      client: 'fetch',
+      client: 'axios',
       mode: 'tags-split',
       clean: true,
       prettier: true,
-      baseUrl: '',
       override: {
         mutator: {
-          path: './src/lib/api-client.ts',
-          name: 'apiClient',
+          path: './src/lib/axios-client.ts',
+          name: 'axiosClient',
         },
       },
     },
