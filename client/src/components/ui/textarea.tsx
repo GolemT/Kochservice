@@ -1,29 +1,16 @@
-import * as React from 'react'
-import { cn } from '@/lib/utils'
+import { type TextareaHTMLAttributes, forwardRef } from 'react'
 
-export interface TextareaProps extends React.ComponentProps<'textarea'> {
-  maxLength?: number
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   showCount?: boolean
 }
 
-export function Textarea({ className, maxLength, showCount, ...props }: TextareaProps) {
-  const value = typeof props.value === 'string' ? props.value : ''
-
-  return (
-    <div className="relative">
-      <textarea
-        maxLength={maxLength}
-        className={cn(
-          'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none',
-          className,
-        )}
-        {...props}
-      />
-      {showCount && maxLength && (
-        <span className="absolute bottom-2 right-3 text-xs text-muted-foreground">
-          {value.length}/{maxLength}
-        </span>
-      )}
-    </div>
-  )
-}
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className = '', showCount: _showCount, ...props }, ref) => (
+    <textarea
+      ref={ref}
+      className={`w-full px-3 py-2 border-2 border-ink rounded-sketchy-sm bg-paper text-ink font-hand text-sm placeholder:text-ink-3 outline-none focus:shadow-ink-sm transition-all resize-y ${className}`}
+      {...props}
+    />
+  ),
+)
+Textarea.displayName = 'Textarea'
